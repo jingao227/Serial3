@@ -68,15 +68,18 @@ object main {
     */
     //val parser = XMLReaderFactory.createXMLReader()
 
-    val step1 = new Step(0, "author", null)             //  //author
-    val step2 = new Step(0, "title", null)              //  /title
-    val step5 = new Step(0, "aojing", null)             //  /author
-    val pred2 = new Pred(step5, null)                   //  [/author]
-    val pred1 = new Pred(step2, pred2)                  //  [/title][/author]
-    val step3 = new Step(0, "article", pred1)           //  //article[/title][/author]
+    val step1 = new Step(1, "TITLE", null)             //  //author
+    val step2 = new Step(1, "AUTHOR", null)              //  /title
+    //val step5 = new Step(0, "ISBN", null)             //  /author
+    //val pred2 = new Pred(step5, null)                   //  [/author]
+
+    val pred1 = new Pred(step2, null)                  //  [/title][/author]
+    val step3 = new Step(1, "ITEM", pred1)           //  //article[/title][/author]
     val path1 = new Path(step3, new Path(step1, null))  //  //article[/title][/author]//author
-    val step4 = new Step(0, "dblp", null)               //  //dblp
+    val step4 = new Step(1, "dblp", null)               //  //dblp
     val path = new Path(step4, path1)                   //  //dblp//article[/title][/author]//author
+                                                        //  /BOOKS/ITEM[AUTHOR]/TITLE
+                                                        //  若根节点一直未匹配过，则根节点不会做Reduce操作，所以不会有输出（因为输出操作在Reduce中）
 
     val root = translate(path)
     root.rStack.push(false)

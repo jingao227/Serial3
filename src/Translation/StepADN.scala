@@ -21,19 +21,33 @@ class StepADN(id: Int, label: String) extends TTNode(id, label) {
     }
     r
   }
-  override def doMatch(test: String, qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]) = {
+  override def doMatch(toSend: scala.Boolean, waitList: WaitList, sendList: ListBuffer[WaitListNode], test: String,
+                       qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
     Map
     //    qforx1.append(this)
     //    //redList.append(this)    //  没有的Map，就不用Reduce
     //    qforx2.append(this)
     qforx1 += new QListNode(this, null)
-    qforx2 += new QListNode(this, null)
+    if (!toSend) {
+      qforx2 += new QListNode(this, null)
+      (0, 0, 0)
+    } else {
+      qforx2 += new QListNode(this, waitList)
+      (this.id, 0, 0)
+    }
   }
-  override def doNotMatch(test: String, qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]) = {
+  override def doNotMatch(toSend: scala.Boolean, waitList: WaitList, sendList: ListBuffer[WaitListNode], test: String,
+                          qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
     //    qforx1.append(this)
     //    qforx2.append(this)
     qforx1 += new QListNode(this, null)
-    qforx2 += new QListNode(this, null)
+    if (!toSend) {
+      qforx2 += new QListNode(this, null)
+      (0, 0, 0)
+    } else {
+      qforx2 += new QListNode(this, waitList)
+      (this.id, 0, 0)
+    }
   }
   override def Map = {
     rStack.pop()

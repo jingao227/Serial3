@@ -51,7 +51,8 @@ class PredPCYY(id: Int, label: String) extends TTNode(id, label) {
     q3 = new PredPCYN(cid + 1, this.label, this)
     q3.translate(new Pred(preds.step, null))
   }
-  override def doMatch(test: String, qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]) = {
+  override def doMatch(toSend: scala.Boolean, waitList: WaitList, sendList: ListBuffer[WaitListNode], test: String,
+                       qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
     //if (!rStack.top) {
     Map
     //      qforx1.append(q1)
@@ -59,16 +60,31 @@ class PredPCYY(id: Int, label: String) extends TTNode(id, label) {
     //      qforx2.append(q3)
     qforx1 += new QListNode(q1, null)
     redList += new QListNode(this, null)    //  只在match且压入q'''(x2)时做Reduce
-    qforx2 += new QListNode(q3, null)
+    if (!toSend) {
+      qforx2 += new QListNode(q3, null)
+      val newQLNode = new QListNode(q2, null)
+      newQLNode.doWork(toSend, sendList, test, qforx1, qforx2, redList)
+      (0, 0, 0)
+    } else {
+      qforx2 += new QListNode(q3, waitList)
+      val newQLNode = new QListNode(q2, null)
+      newQLNode.doWork(toSend, sendList, test, qforx1, qforx2, redList)
+      (q1.getID, 0, 0)
+    }
     //}
-    q2.doWork(test, qforx1, qforx2, redList)
+    //q2.doWork(test, qforx1, qforx2, redList)
   }
-  override def doNotMatch(test: String, qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]) = {
+  override def doNotMatch(toSend: scala.Boolean, waitList: WaitList, sendList: ListBuffer[WaitListNode], test: String,
+                          qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
     //if (!rStack.top) {
     //      qforx2.append(q3)
-    qforx2 += new QListNode(q3, null)
+    if (!toSend) qforx2 += new QListNode(q3, null)
+    else qforx2 += new QListNode(q3, waitList)
+    val newQLNode = new QListNode(q2, null)
+    newQLNode.doWork(toSend, sendList, test, qforx1, qforx2, redList)
+    (0, 0, 0)
     //}
-    q2.doWork(test, qforx1, qforx2, redList)
+    //q2.doWork(test, qforx1, qforx2, redList)
   }
   override def Map = MapAllChild(q1)
   override def Reduce = {

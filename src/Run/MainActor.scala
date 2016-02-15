@@ -1,7 +1,7 @@
 package Run
 
 import StackNode._
-import Translation.TTNode
+import Translation.{WaitListNode, TTNode}
 import org.xml.sax.InputSource
 import scala.collection.mutable._
 import akka.actor.{ReceiveTimeout, Actor, Props}
@@ -38,7 +38,8 @@ class MainActor(root: TTNode) extends Actor{
         val qforx1 = new ListBuffer[QListNode]
         val qforx2 = new ListBuffer[QListNode]
         val redList = new ListBuffer[QListNode]
-        stack.pop().doEachWork(test, qforx1, qforx2, redList)
+        val sendList = new ListBuffer[WaitListNode]
+        stack.pop().doEachWork(false, sendList, test, qforx1, qforx2, redList)
       }
     }
     case (_type: Int, test: String, testRank: Int) if _type == 1 => {

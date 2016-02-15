@@ -1,6 +1,6 @@
 package Run
 
-import Translation.TTNode
+import Translation.{WaitListNode, TTNode}
 import org.xml.sax.Attributes
 import akka.actor.{ActorRef}
 import scala.collection.mutable._
@@ -42,7 +42,8 @@ class SAXHandler(var rank: Int, stack: Stack[StackNode]) extends scala.xml.parsi
       val qforx1 = new ListBuffer[QListNode]
       val qforx2 = new ListBuffer[QListNode]
       val redList = new ListBuffer[QListNode]
-      stack.pop().doEachWork(qname, qforx1, qforx2, redList)
+      val sendList = new ListBuffer[WaitListNode]
+      stack.pop().doEachWork(false, sendList, qname, qforx1, qforx2, redList)
     }
 
   }

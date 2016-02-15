@@ -7,7 +7,7 @@ import XPath._
 import StackNode.QListNode
 import scala.collection.mutable._
 
-class TTNode(idforTTNode: Int, label: String) {
+class TTNode(id: Int, label: String) {
   val rStack = new Stack[scala.Boolean]
   val waitLists = new ListBuffer[WaitList]
   var listSize: Int = 0
@@ -23,15 +23,20 @@ class TTNode(idforTTNode: Int, label: String) {
   def translate(step: Step): Int = ???
 
   def getSize = listSize
+  def getID = id
   def setOutput(o: scala.Boolean) = output = o
 
-  def doMatch(test: String, qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int) = ???
-  def doNotMatch(test: String, qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int) = ???
-  def doWork(test: String, qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int) = {
-    if (test == label) doMatch(test, qforx1, qforx2, redList)
-    else doNotMatch(test, qforx1, qforx2, redList)
+  def doMatch(toSend: scala.Boolean, waitList: WaitList, sendList: ListBuffer[WaitListNode], test: String, qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = ???
+  def doNotMatch(toSend: scala.Boolean, waitList: WaitList, sendList: ListBuffer[WaitListNode], test: String, qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = ???
+  def doWork(toSend: scala.Boolean, waitList: WaitList, sendList: ListBuffer[WaitListNode], test: String, qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
+    if (test == label) doMatch(toSend, waitList, sendList, test, qforx1, qforx2, redList)
+    else doNotMatch(toSend, waitList, sendList, test, qforx1, qforx2, redList)
   }
-  def addWaitLists(originNode: WaitListNode) = waitLists += new WaitList(listSize + 1, originNode)
+  def addWaitLists(originNode: WaitListNode): WaitList = {
+    val newlist = new WaitList(listSize + 1, originNode)
+    waitLists += newlist
+    newlist
+  }
 
   def hasq2 = if (q2 != null) true else false
   def getResult = rStack.pop()
