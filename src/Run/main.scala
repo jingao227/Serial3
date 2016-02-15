@@ -3,7 +3,7 @@ package Run
 import Translation._
 import XPath._
 import org.xml.sax.helpers.XMLReaderFactory
-import StackNode.{QListNode, StackNode}
+import StackNode.{QList, QListNode, StackNode}
 import Translation.TTNode
 import akka.actor.{ActorRef, Props, ActorSystem}
 import scala.collection.mutable.{ListBuffer, Stack}
@@ -13,19 +13,19 @@ import scala.collection.mutable.{ListBuffer, Stack}
 object main {
   def translate (path: Path): TTNode = {
     if (path.hasq1 && path.isPC) {
-      val root = new PathPCY(path.getTest)
+      val root = new PathPCY(1, path.getTest)
       root.translate(path)
       root
     } else if (!path.hasq1 && path.isPC) {
-      val root = new PathPCN(path.getTest)
+      val root = new PathPCN(1, path.getTest)
       root.translate(path)
       root
     } else if (path.hasq1 && !path.isPC) {
-      val root = new PathADY(path.getTest)
+      val root = new PathADY(1, path.getTest)
       root.translate(path)
       root
     } else {
-      val root = new PathADN(path.getTest)
+      val root = new PathADN(1, path.getTest)
       root.translate(path)
       root
     }
@@ -33,19 +33,19 @@ object main {
 
   def translate (step: Step): TTNode = {
     if (step.hasq1 && step.isPC) {
-      val root = new StepPCY(step.getTest)
+      val root = new StepPCY(1, step.getTest)
       root.translate(step)
       root
     } else if (step.hasq1 && step.isPC) {
-      val root = new StepPCN(step.getTest)
+      val root = new StepPCN(1, step.getTest)
       root.translate(step)
       root
     } else if (step.hasq1 && step.isPC) {
-      val root = new StepADY(step.getTest)
+      val root = new StepADY(1, step.getTest)
       root.translate(step)
       root
     } else {
-      val root = new StepADN(step.getTest)
+      val root = new StepADN(1, step.getTest)
       root.translate(step)
       root
     }
@@ -70,20 +70,22 @@ object main {
 
     val step1 = new Step(0, "author", null)             //  //author
     val step2 = new Step(0, "title", null)              //  /title
-    val pred1 = new Pred(step2, null)                   //  [/title]
-    val step3 = new Step(0, "article", pred1)     //  //inproceedings[/title]
-    val path1 = new Path(step3, new Path(step1, null))  //  //inproceedings[/title]//author
+    val step5 = new Step(0, "aojing", null)             //  /author
+    val pred2 = new Pred(step5, null)                   //  [/author]
+    val pred1 = new Pred(step2, pred2)                  //  [/title][/author]
+    val step3 = new Step(0, "article", pred1)           //  //article[/title][/author]
+    val path1 = new Path(step3, new Path(step1, null))  //  //article[/title][/author]//author
     val step4 = new Step(0, "dblp", null)               //  //dblp
-    val path = new Path(step4, path1)                   //  //dblp//inproceedings[/title]//author
+    val path = new Path(step4, path1)                   //  //dblp//article[/title][/author]//author
 
     val root = translate(path)
     root.rStack.push(false)
     root.setOutput(true)
 
     val stack = new Stack[StackNode]                                //  在main中执行parse
-    val originqList = new ListBuffer[TTNode]
-    originqList += root
-    val originStackNode = new QListNode(stack, 1, originqList)
+    val originqList = new ListBuffer[QListNode]
+    originqList += new QListNode(root, null)
+    val originStackNode = new QList(stack, 1, originqList)
     stack.push(originStackNode)
 
     val parser = XMLReaderFactory.createXMLReader()
@@ -99,6 +101,20 @@ object main {
     println("WorkTime: " + (System.currentTimeMillis() - startTime))
 
     //val system = ActorSystem("mySystem")                           //  在MainActor中执行parse
-    //val mainActor = system.actorOf(Props[MainActor](new MainActor(xmlURI, root)), "mainActor")
+    //val mainActor = system.actorOf(Props[MainActor](new MainActor(stack)), "mainActor")
+
+    /*                                                               //   标签作为消息传递给Actor而不是在Actor中解析
+    val system = ActorSystem("mySystem")
+    val mainActor = system.actorOf(Props[MainActor](new MainActor(root)), "mainActor")
+    val parser = XMLReaderFactory.createXMLReader()
+    val saxHandler = new SAXHandler(0, mainActor)
+    System.setProperty("entityExpansionLimit", "3200000")
+    parser.setContentHandler(saxHandler)
+    println("Start Timing!")
+    val startTime = System.currentTimeMillis()
+    parser.parse(xmlURI)
+    println("End Timing!")
+    println("WorkTime: " + (System.currentTimeMillis() - startTime))
+    */
   }
 }

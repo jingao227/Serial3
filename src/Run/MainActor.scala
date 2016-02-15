@@ -10,13 +10,14 @@ import org.xml.sax.helpers.XMLReaderFactory
 /**
   * Created by Jing Ao on 2016/2/15.
   */
-class MainActor(xmlURI: String, root: TTNode) extends Actor{
+class MainActor(root: TTNode) extends Actor{
   val stack = new Stack[StackNode]
-  val originqList = new ListBuffer[TTNode]
-  originqList += root
-  val originStackNode = new QListNode(stack, 1, originqList)
+  val originqList = new ListBuffer[QListNode]
+  originqList += new QListNode(root, null)
+  val originStackNode = new QList(stack, 1, originqList)
   stack.push(originStackNode)
 
+  /*
   val parser = XMLReaderFactory.createXMLReader()
   val saxhandler = new SAXHandler(0, stack)
 
@@ -28,11 +29,27 @@ class MainActor(xmlURI: String, root: TTNode) extends Actor{
   parser.parse(xmlURI)
   println("End Timing!")
   println("WorkTime: " + (System.currentTimeMillis() - startTime))
-
+  */
 
   //context.setReceiveTimeout(100 millisecond)
   def receive = {
-    case _ =>
+    case (_type: Int, test: String, testRank: Int) if _type == 0 => {
+      if (testRank == stack.top.getRank) {
+        val qforx1 = new ListBuffer[QListNode]
+        val qforx2 = new ListBuffer[QListNode]
+        val redList = new ListBuffer[QListNode]
+        stack.pop().doEachWork(test, qforx1, qforx2, redList)
+      }
+    }
+    case (_type: Int, test: String, testRank: Int) if _type == 1 => {
+      if (testRank < stack.top.getRank) {
+        stack.pop()
+        while (stack.top.getRank == -1) {
+          stack.pop().doEachReduce
+        }
+      }
+    }
+    //case _ =>
     /*
     case (_type: Int, test: String, testRank: Int) => {
       //implicit val timeout = Timeout()
@@ -63,6 +80,6 @@ class MainActor(xmlURI: String, root: TTNode) extends Actor{
 }
 
 object MainActor {
-  def props(xmlURI: String, root: TTNode) = Props(new MainActor(xmlURI, root))
+  def props(xmlURI: String, root: TTNode) = Props(new MainActor(root))
 }
 

@@ -2,13 +2,13 @@ package Run
 
 import Translation.TTNode
 import org.xml.sax.Attributes
-//import akka.actor.{ActorRef}
+import akka.actor.{ActorRef}
 import scala.collection.mutable._
 import StackNode._
 /**
   * Created by Jing Ao on 2016/2/15.
   */
-class SAXHandler(var rank: Int, stack: Stack[StackNode]) extends scala.xml.parsing.FactoryAdapter {
+class SAXHandler(var rank: Int, stack: Stack[StackNode]) extends scala.xml.parsing.FactoryAdapter { // stack: Stack[StackNode], mainActor: ActorRef
   //var mainActor: ActorRef = null
   /*
   def startParse(root: TTNode) = {
@@ -27,7 +27,7 @@ class SAXHandler(var rank: Int, stack: Stack[StackNode]) extends scala.xml.parsi
     val factory = SAXParserFactory.newInstance();
     val parser = factory.newSAXParser();
 
-    //mainActor = system.actorOf(Props[MainActor](new MainActor(stack)), "mainActor")
+    mainActor = system.actorOf(Props[MainActor](new MainActor(stack)), "mainActor")
 
     this.loadXML(source, parser)
     parser.parse(source, this)
@@ -37,17 +37,20 @@ class SAXHandler(var rank: Int, stack: Stack[StackNode]) extends scala.xml.parsi
     rank = rank + 1
     //println("<" + qname + "> of " + rank)
     //mainActor ! (0, qname, rank)
+
     if (rank == stack.top.getRank) {
-      var qforx1 = new ListBuffer[TTNode]
-      var qforx2 = new ListBuffer[TTNode]
-      var redList = new ListBuffer[TTNode]
+      val qforx1 = new ListBuffer[QListNode]
+      val qforx2 = new ListBuffer[QListNode]
+      val redList = new ListBuffer[QListNode]
       stack.pop().doEachWork(qname, qforx1, qforx2, redList)
     }
+
   }
 
   override def endElement(uri: String, _localName: String, qname: String): Unit = {
     //println("</" + qname + "> of " + rank)
     //mainActor ! (1, qname, rank)
+
     if (rank < stack.top.getRank) {
       stack.pop()
       //      stack.top match {

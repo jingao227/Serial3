@@ -3,32 +3,34 @@ package Translation
 /**
   * Created by Jing Ao on 2016/2/15.
   */
-import XPath._
 
+import StackNode.QListNode
+import XPath._
 import scala.collection.mutable.ListBuffer
 
-class PredADNY(label: String) extends TTNode(label) {
-  override def translate(preds: Pred): Unit = {
-    println(" " + this.label + " ")
+class PredADNY(id: Int, label: String) extends TTNode(id, label) {
+  override def translate(preds: Pred): Int = {
+    println(this.id + ": " +  this.label + " ")
+    var cid: Int = id
     if (preds.preds.hasq1) {
       if (preds.preds.hasq2) {
-        if (preds.preds.isPC) q2 = new PredPCYY(preds.preds.getTest)
-        else q2 = new PredADYY(preds.preds.getTest)
+        if (preds.preds.isPC) q2 = new PredPCYY(cid + 1, preds.preds.getTest)
+        else q2 = new PredADYY(cid + 1, preds.preds.getTest)
       } else {
-        if (preds.preds.isPC) q2 = new PredPCYN(preds.preds.getTest, null)
-        else q2 = new PredADYN(preds.preds.getTest, null)
+        if (preds.preds.isPC) q2 = new PredPCYN(cid + 1, preds.preds.getTest, null)
+        else q2 = new PredADYN(cid + 1, preds.preds.getTest, null)
       }
     } else {
       if (preds.preds.hasq2) {
-        if (preds.preds.isPC) q2 = new PredPCNY(preds.preds.getTest)
-        else q2 = new PredADNY(preds.preds.getTest)
+        if (preds.preds.isPC) q2 = new PredPCNY(cid + 1, preds.preds.getTest)
+        else q2 = new PredADNY(cid + 1, preds.preds.getTest)
       } else {
-        if (preds.preds.isPC) q2 = new PredPCNN(preds.preds.getTest, null)
-        else q2 = new PredADNN(preds.preds.getTest, null)
+        if (preds.preds.isPC) q2 = new PredPCNN(cid + 1, preds.preds.getTest, null)
+        else q2 = new PredADNN(cid + 1, preds.preds.getTest, null)
       }
     }
-    q2.translate(preds.preds)
-    q3 = new PredADNN(this.label, this)
+    cid = q2.translate(preds.preds)
+    q3 = new PredADNN(cid + 1, this.label, this)
     q3.translate(new Pred(preds.step, null))
   }
   override def getResult = {
@@ -39,18 +41,18 @@ class PredADNY(label: String) extends TTNode(label) {
     }
     r
   }
-  override def doMatch(test: String, qforx1: ListBuffer[TTNode], qforx2: ListBuffer[TTNode], redList: ListBuffer[TTNode]) = {
+  override def doMatch(test: String, qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]) = {
     //if (!rStack.top) {
     Map
     //}
     q2.doWork(test, qforx1, qforx2, redList)
   }
-  override def doNotMatch(test: String, qforx1: ListBuffer[TTNode], qforx2: ListBuffer[TTNode], redList: ListBuffer[TTNode]) = {
+  override def doNotMatch(test: String, qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]) = {
     //if (!rStack.top) {
     //      qforx1.append(q3)
     //      qforx2.append(q3)
-    qforx1 += q3
-    qforx2 += q3
+    qforx1 += new QListNode(q3, null)
+    qforx2 += new QListNode(q3, null)
     //}
     q2.doWork(test, qforx1, qforx2, redList)
   }

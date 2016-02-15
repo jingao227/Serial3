@@ -8,6 +8,6 @@ import scala.collection.mutable._
   */
 class StackNode(stack: Stack[StackNode]) {
   def getRank: Int = ???
-  def doEachWork(test: String, qforx1: ListBuffer[TTNode], qforx2: ListBuffer[TTNode], redList: ListBuffer[TTNode]): Unit = ???
+  def doEachWork(test: String, qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): Unit = ???
   def doEachReduce: Unit = ???
 }

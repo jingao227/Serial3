@@ -4,46 +4,47 @@ package Translation
   * Created by Jing Ao on 2016/2/15.
   */
 import XPath._
-
+import StackNode.QListNode
 import scala.collection.mutable.ListBuffer
 
-class PathADY(label: String) extends TTNode(label) {
-  override def translate(path: Path): Unit = {
-    println(" " + this.label + " ")
+class PathADY(id: Int, label: String) extends TTNode(id, label) {
+  override def translate(path: Path): Int = {
+    println(this.id + ": " +  this.label + " ")
+    var cid: Int = id
     if(path.step.preds.hasq1) {
       if(path.step.preds.hasq2) {
-        if(path.step.preds.isPC) q1 = new PredPCYY(path.step.preds.getTest)
-        else q1 = new PredADYY(path.step.preds.getTest)
+        if(path.step.preds.isPC) q1 = new PredPCYY(cid + 1, path.step.preds.getTest)
+        else q1 = new PredADYY(cid + 1, path.step.preds.getTest)
       } else {
-        if (path.step.preds.isPC) q1 = new PredPCYN(path.step.preds.getTest, null)
-        else q1 = new PredADYN(path.step.preds.getTest, null)
+        if (path.step.preds.isPC) q1 = new PredPCYN(cid + 1, path.step.preds.getTest, null)
+        else q1 = new PredADYN(cid + 1, path.step.preds.getTest, null)
       }
     } else {
       if(path.step.preds.hasq2) {
-        if(path.step.preds.isPC) q1 = new PredPCNY(path.step.preds.getTest)
-        else q1 = new PredADNY(path.step.preds.getTest)
+        if(path.step.preds.isPC) q1 = new PredPCNY(cid + 1, path.step.preds.getTest)
+        else q1 = new PredADNY(cid + 1, path.step.preds.getTest)
       } else {
-        if (path.step.preds.isPC) q1 = new PredPCNN(path.step.preds.getTest, null)
-        else q1 = new PredADNN(path.step.preds.getTest, null)
+        if (path.step.preds.isPC) q1 = new PredPCNN(cid + 1, path.step.preds.getTest, null)
+        else q1 = new PredADNN(cid + 1, path.step.preds.getTest, null)
       }
     }
-    q1.translate(path.step.preds)
+    cid = q1.translate(path.step.preds)
 
     if(path.path.hasq1) {
       if(path.path.isPC) {
-        if(path.q2ispath) q2 = new PathPCY(path.path.getTest)
-        else q2 = new StepPCY(path.path.getTest)
+        if(path.q2ispath) q2 = new PathPCY(cid + 1, path.path.getTest)
+        else q2 = new StepPCY(cid + 1, path.path.getTest)
       } else {
-        if(path.q2ispath) q2 = new PathADY(path.path.getTest)
-        else q2 = new StepADY(path.path.getTest)
+        if(path.q2ispath) q2 = new PathADY(cid + 1, path.path.getTest)
+        else q2 = new StepADY(cid + 1, path.path.getTest)
       }
     } else {
       if(path.path.isPC) {
-        if(path.q2ispath) q2 = new PathPCN(path.path.getTest)
-        else q2 = new StepPCN(path.path.getTest)
+        if(path.q2ispath) q2 = new PathPCN(cid + 1, path.path.getTest)
+        else q2 = new StepPCN(cid + 1, path.path.getTest)
       } else {
-        if(path.q2ispath) q2 = new PathADN(path.path.getTest)
-        else q2 = new StepADN(path.path.getTest)
+        if(path.q2ispath) q2 = new PathADN(cid + 1, path.path.getTest)
+        else q2 = new StepADN(cid + 1, path.path.getTest)
       }
     }
     q2.translate(path.path)
@@ -56,24 +57,24 @@ class PathADY(label: String) extends TTNode(label) {
     }
     r
   }
-  override def doMatch(test: String, qforx1: ListBuffer[TTNode], qforx2: ListBuffer[TTNode], redList: ListBuffer[TTNode]) = {
+  override def doMatch(test: String, qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]) = {
     Map
     //    qforx1.append(q1)
     //    qforx1.append(q2)
     //    qforx1.append(this)
     //    redList.append(this)
     //    qforx2.append(this)
-    qforx1 += q1
-    qforx1 += q2
-    qforx1 += this
-    redList += this
-    qforx2 += this
+    qforx1 += new QListNode(q1, null)
+    qforx1 += new QListNode(q2, null)
+    qforx1 += new QListNode(this, null)
+    redList += new QListNode(this, null)
+    qforx2 += new QListNode(this, null)
   }
-  override def doNotMatch(test: String, qforx1: ListBuffer[TTNode], qforx2: ListBuffer[TTNode], redList: ListBuffer[TTNode]) = {
+  override def doNotMatch(test: String, qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]) = {
     //    qforx1.append(this)
     //    qforx2.append(this)
-    qforx1 += this
-    qforx2 += this
+    qforx1 += new QListNode(this, null)
+    qforx2 += new QListNode(this, null)
   }
   override def Map = {MapAllChild(q1) ; q2.rStack.push(false)}
   override def Reduce = {

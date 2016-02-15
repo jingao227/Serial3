@@ -4,11 +4,14 @@ package Translation
   * Created by Jing Ao on 2016/2/15.
   */
 import XPath._
-
+import StackNode.QListNode
 import scala.collection.mutable.ListBuffer
 
-class PredADNN(label: String, father: TTNode) extends TTNode(label) {
-  override def translate(preds: Pred) = println(" " + this.label + " ")
+class PredADNN(id: Int, label: String, father: TTNode) extends TTNode(id, label) {
+  override def translate(preds: Pred): Int = {
+    println(this.id + ": " +  this.label + " ")
+    id
+  }
   override def getResult = {
     val r = rStack.pop()
     if (r && rStack.nonEmpty) {
@@ -17,17 +20,17 @@ class PredADNN(label: String, father: TTNode) extends TTNode(label) {
     }
     r
   }
-  override def doMatch(test: String, qforx1: ListBuffer[TTNode], qforx2: ListBuffer[TTNode], redList: ListBuffer[TTNode]) = {
+  override def doMatch(test: String, qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]) = {
     if ((father == null && !rStack.top) || (father != null && !rStack.top && !father.rStack.top)) {
       Map
     }
   }
-  override def doNotMatch(test: String, qforx1: ListBuffer[TTNode], qforx2: ListBuffer[TTNode], redList: ListBuffer[TTNode]) = {
+  override def doNotMatch(test: String, qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]) = {
     if ((father == null && !rStack.top) || (father != null && !rStack.top && !father.rStack.top)) {
       //      qforx1.append(this)
       //      qforx2.append(this)
-      qforx1 += this
-      qforx2 += this
+      qforx1 += new QListNode(this, null)
+      qforx2 += new QListNode(this, null)
     }
   }
   override def Map = {
