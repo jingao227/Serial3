@@ -57,38 +57,22 @@ class PathADY(id: Int, label: String) extends TTNode(id, label) {
     }
     r
   }
-  override def doMatch(toSend: scala.Boolean, waitList: WaitList, sendList: ListBuffer[WaitListNode], test: String,
+  override def doMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[WaitListNode], test: String,
                        qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
     Map
-    //    qforx1.append(q1)
-    //    qforx1.append(q2)
-    //    qforx1.append(this)
-    //    redList.append(this)
-    //    qforx2.append(this)
     qforx1 += new QListNode(q1, null)
     qforx1 += new QListNode(q2, null)
     qforx1 += new QListNode(this, null)
-    redList += new QListNode(this, null)
-    if (!toSend) {
-      qforx2 += new QListNode(this, null)
-      (0, 0, 0)
-    } else {
-      qforx2 += new QListNode(this, waitList)
-      (q1.getID, q2.getID, this.id)
-    }
+    //redList += new QListNode(this, null)
+    redList += qlistNode
+    qforx2 += qlistNode
+    if (!toSend) (0, 0, 0) else (q1.getID, q2.getID, this.id)
   }
-  override def doNotMatch(toSend: scala.Boolean, waitList: WaitList, sendList: ListBuffer[WaitListNode], test: String,
+  override def doNotMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[WaitListNode], test: String,
                           qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
-    //    qforx1.append(this)
-    //    qforx2.append(this)
     qforx1 += new QListNode(this, null)
-    if (!toSend) {
-      qforx2 += new QListNode(this, null)
-      (0, 0, 0)
-    } else {
-      qforx2 += new QListNode(this, waitList)
-      (this.id, 0, 0)
-    }
+    qforx2 += qlistNode
+    if (!toSend) (0, 0, 0) else (this.id, 0, 0)
   }
   override def Map = {MapAllChild(q1) ; q2.rStack.push(false)}
   override def Reduce = {

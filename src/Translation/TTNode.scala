@@ -26,11 +26,11 @@ class TTNode(id: Int, label: String) {
   def getID = id
   def setOutput(o: scala.Boolean) = output = o
 
-  def doMatch(toSend: scala.Boolean, waitList: WaitList, sendList: ListBuffer[WaitListNode], test: String, qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = ???
-  def doNotMatch(toSend: scala.Boolean, waitList: WaitList, sendList: ListBuffer[WaitListNode], test: String, qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = ???
-  def doWork(toSend: scala.Boolean, waitList: WaitList, sendList: ListBuffer[WaitListNode], test: String, qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
-    if (test == label) doMatch(toSend, waitList, sendList, test, qforx1, qforx2, redList)
-    else doNotMatch(toSend, waitList, sendList, test, qforx1, qforx2, redList)
+  def doMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[WaitListNode], test: String, qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = ???
+  def doNotMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[WaitListNode], test: String, qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = ???
+  def doWork(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[WaitListNode], test: String, qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
+    if (test == label) doMatch(toSend, qlistNode, sendList, test, qforx1, qforx2, redList)
+    else doNotMatch(toSend, qlistNode, sendList, test, qforx1, qforx2, redList)
   }
   def addWaitLists(originNode: WaitListNode): WaitList = {
     val newlist = new WaitList(listSize + 1, originNode)

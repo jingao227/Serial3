@@ -31,27 +31,20 @@ class StepPCY(id: Int, label: String) extends TTNode(id, label) {
     }
     q1.translate(step.preds)
   }
-  override def doMatch(toSend: scala.Boolean, waitList: WaitList, sendList: ListBuffer[WaitListNode], test: String,
+  override def doMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[WaitListNode], test: String,
                        qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
     Map
-    //    qforx1.append(q1)
-    //    redList.append(this)
-    //    qforx2.append(this)
     qforx1 += new QListNode(q1, null)
-    redList += new QListNode(this, null)
-    if (!toSend) {
-      qforx2 += new QListNode(this, null)
-      (0, 0, 0)
-    } else {
-      qforx2 += new QListNode(this, waitList)
-      (q1.getID, 0, 0)
-    }
+    //redList += new QListNode(this, null)
+    redList += qlistNode
+    qforx2 += qlistNode
+    if (!toSend) (0, 0, 0) else (q1.getID, 0, 0)
   }
-  override def doNotMatch(toSend: scala.Boolean, waitList: WaitList, sendList: ListBuffer[WaitListNode], test: String,
+  override def doNotMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[WaitListNode], test: String,
                           qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
-    //    qforx2.append(this)
-    if (!toSend) qforx2 += new QListNode(this, null)
-    else qforx2 += new QListNode(this, waitList)
+    qforx2 += qlistNode
+//    if (!toSend) qforx2 += new QListNode(this, null)
+//    else qforx2 += new QListNode(this, waitList)
     (0, 0, 0)
   }
   override def Map = MapAllChild(q1)

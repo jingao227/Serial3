@@ -41,7 +41,7 @@ class PredADNY(id: Int, label: String) extends TTNode(id, label) {
     }
     r
   }
-  override def doMatch(toSend: scala.Boolean, waitList: WaitList, sendList: ListBuffer[WaitListNode], test: String,
+  override def doMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[WaitListNode], test: String,
                        qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
     //if (!rStack.top) {
     Map
@@ -50,23 +50,25 @@ class PredADNY(id: Int, label: String) extends TTNode(id, label) {
     newQLNode.doWork(toSend, sendList, test, qforx1, qforx2, redList)
     (0, 0, 0)
   }
-  override def doNotMatch(toSend: scala.Boolean, waitList: WaitList, sendList: ListBuffer[WaitListNode], test: String,
+  override def doNotMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[WaitListNode], test: String,
                           qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
     //if (!rStack.top) {
-    //      qforx1.append(q3)
-    //      qforx2.append(q3)
     qforx1 += new QListNode(q3, null)
-    if (!toSend) {
-      qforx2 += new QListNode(q3, null)
-      val newQLNode = new QListNode(q2, null)
-      newQLNode.doWork(toSend, sendList, test, qforx1, qforx2, redList)
-      (0, 0, 0)
-    } else {
-      qforx2 += new QListNode(q3, waitList)
-      val newQLNode = new QListNode(q2, null)
-      newQLNode.doWork(toSend, sendList, test, qforx1, qforx2, redList)
-      (q3.getID, 0, 0)
-    }
+    qforx2 += new QListNode(q3, qlistNode.getwaitList)
+    val newQLNode = new QListNode(q2, null)
+    newQLNode.doWork(toSend, sendList, test, qforx1, qforx2, redList)
+    if (!toSend) (0, 0, 0) else (q3.getID, 0, 0)
+//    if (!toSend) {
+//      qforx2 += new QListNode(q3, null)
+//      val newQLNode = new QListNode(q2, null)
+//      newQLNode.doWork(toSend, sendList, test, qforx1, qforx2, redList)
+//      (0, 0, 0)
+//    } else {
+//      qforx2 += new QListNode(q3, waitList)
+//      val newQLNode = new QListNode(q2, null)
+//      newQLNode.doWork(toSend, sendList, test, qforx1, qforx2, redList)
+//      (q3.getID, 0, 0)
+//    }
     //}
     //q2.doWork(test, qforx1, qforx2, redList)
   }

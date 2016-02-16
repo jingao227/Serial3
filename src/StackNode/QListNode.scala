@@ -23,7 +23,6 @@ class QListNode(ttNode: TTNode, var waitList: WaitList) {
 
   def doWork(toSend: scala.Boolean, sendList: ListBuffer[WaitListNode], test: String,
              qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]) = {
-    //(val qa: Int, val qb: Int) =
-    ttNode.doWork(toSend, waitList, sendList, test, qforx1, qforx2, redList)
+    val (qa: Int, qb: Int, qc: Int) = ttNode.doWork(toSend, this, sendList, test, qforx1, qforx2, redList)
   }
 }
