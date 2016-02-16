@@ -1,5 +1,6 @@
 package Run
 
+import Message.Message
 import StackNode._
 import Translation.{WaitListNode, TTNode}
 import org.xml.sax.InputSource
@@ -38,7 +39,7 @@ class MainActor(root: TTNode) extends Actor{
         val qforx1 = new ListBuffer[QListNode]
         val qforx2 = new ListBuffer[QListNode]
         val redList = new ListBuffer[QListNode]
-        val sendList = new ListBuffer[WaitListNode]
+        val sendList = new ListBuffer[Message]
         stack.pop().doEachWork(false, sendList, test, qforx1, qforx2, redList)
       }
     }

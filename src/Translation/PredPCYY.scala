@@ -1,5 +1,6 @@
 package Translation
 
+import Message.Message
 import StackNode.QListNode
 import XPath.Pred
 
@@ -51,7 +52,7 @@ class PredPCYY(id: Int, label: String) extends TTNode(id, label) {
     q3 = new PredPCYN(cid + 1, this.label, this)
     q3.translate(new Pred(preds.step, null))
   }
-  override def doMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[WaitListNode], test: String,
+  override def doMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[Message], test: String,
                        qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
     //if (!rStack.top) {
     Map
@@ -76,7 +77,7 @@ class PredPCYY(id: Int, label: String) extends TTNode(id, label) {
     //}
     //q2.doWork(test, qforx1, qforx2, redList)
   }
-  override def doNotMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[WaitListNode], test: String,
+  override def doNotMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[Message], test: String,
                           qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
     //if (!rStack.top) {
 //    if (!toSend) qforx2 += new QListNode(q3, null)

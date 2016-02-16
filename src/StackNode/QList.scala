@@ -1,5 +1,6 @@
 package StackNode
 
+import Message.Message
 import Translation.WaitListNode
 
 import scala.collection.mutable.{ListBuffer, Stack}
@@ -9,7 +10,7 @@ import scala.collection.mutable.{ListBuffer, Stack}
   */
 class QList(stack: Stack[StackNode], rank: Int, qlist: ListBuffer[QListNode]) extends StackNode(stack) {
   override def getRank = rank
-  override def doEachWork(toSend: scala.Boolean, sendList: ListBuffer[WaitListNode], test: String,
+  override def doEachWork(toSend: scala.Boolean, sendList: ListBuffer[Message], test: String,
                           qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]) = {
     //    var cur = qlist
     //    while (cur != Nil){
@@ -28,5 +29,6 @@ class QList(stack: Stack[StackNode], rank: Int, qlist: ListBuffer[QListNode]) ex
     if (qforx2.nonEmpty) stack.push(new QList(stack, rank, qforx2))
     if (redList.nonEmpty) stack.push(new ReduceNode(stack, redList))
     if (qforx1.nonEmpty) stack.push(new QList(stack, rank + 1, qforx1))
+    //  if sendList.nonEmpty foreach element <- sendList element.send
   }
 }

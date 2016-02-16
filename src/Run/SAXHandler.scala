@@ -1,5 +1,6 @@
 package Run
 
+import Message.Message
 import Translation.{WaitListNode, TTNode}
 import org.xml.sax.Attributes
 import akka.actor.{ActorRef}
@@ -42,7 +43,7 @@ class SAXHandler(var rank: Int, stack: Stack[StackNode]) extends scala.xml.parsi
       val qforx1 = new ListBuffer[QListNode]
       val qforx2 = new ListBuffer[QListNode]
       val redList = new ListBuffer[QListNode]
-      val sendList = new ListBuffer[WaitListNode]
+      val sendList = new ListBuffer[Message]
       stack.pop().doEachWork(false, sendList, qname, qforx1, qforx2, redList)
     }
 

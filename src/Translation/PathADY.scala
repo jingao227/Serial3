@@ -3,6 +3,8 @@ package Translation
 /**
   * Created by Jing Ao on 2016/2/15.
   */
+
+import Message.Message
 import XPath._
 import StackNode.QListNode
 import scala.collection.mutable.ListBuffer
@@ -57,7 +59,7 @@ class PathADY(id: Int, label: String) extends TTNode(id, label) {
     }
     r
   }
-  override def doMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[WaitListNode], test: String,
+  override def doMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[Message], test: String,
                        qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
     Map
     qforx1 += new QListNode(q1, null)
@@ -68,7 +70,7 @@ class PathADY(id: Int, label: String) extends TTNode(id, label) {
     qforx2 += qlistNode
     if (!toSend) (0, 0, 0) else (q1.getID, q2.getID, this.id)
   }
-  override def doNotMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[WaitListNode], test: String,
+  override def doNotMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[Message], test: String,
                           qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
     qforx1 += new QListNode(this, null)
     qforx2 += qlistNode

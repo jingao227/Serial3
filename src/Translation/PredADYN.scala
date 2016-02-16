@@ -1,5 +1,6 @@
 package Translation
 
+import Message.Message
 import StackNode.QListNode
 import XPath.Pred
 
@@ -38,7 +39,7 @@ class PredADYN(id: Int, label: String, father: TTNode) extends TTNode(id, label)
     }
     r
   }
-  override def doMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[WaitListNode], test: String,
+  override def doMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[Message], test: String,
                        qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
     if ((father == null && !rStack.top) || (father != null && !rStack.top && !father.rStack.top)) {
       Map
@@ -50,7 +51,7 @@ class PredADYN(id: Int, label: String, father: TTNode) extends TTNode(id, label)
       if (!toSend) (0, 0, 0) else (q1.getID, this.id, 0)
     } else (0, 0, 0)
   }
-  override def doNotMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[WaitListNode], test: String,
+  override def doNotMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[Message], test: String,
                           qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
     if ((father == null && !rStack.top) || (father != null && !rStack.top && !father.rStack.top)) {
       qforx1 += new QListNode(this, null)

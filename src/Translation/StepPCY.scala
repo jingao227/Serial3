@@ -1,5 +1,6 @@
 package Translation
 
+import Message.Message
 import StackNode.QListNode
 import XPath.{Path, Step}
 
@@ -31,7 +32,7 @@ class StepPCY(id: Int, label: String) extends TTNode(id, label) {
     }
     q1.translate(step.preds)
   }
-  override def doMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[WaitListNode], test: String,
+  override def doMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[Message], test: String,
                        qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
     Map
     qforx1 += new QListNode(q1, null)
@@ -40,7 +41,7 @@ class StepPCY(id: Int, label: String) extends TTNode(id, label) {
     qforx2 += qlistNode
     if (!toSend) (0, 0, 0) else (q1.getID, 0, 0)
   }
-  override def doNotMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[WaitListNode], test: String,
+  override def doNotMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[Message], test: String,
                           qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
     qforx2 += qlistNode
 //    if (!toSend) qforx2 += new QListNode(this, null)

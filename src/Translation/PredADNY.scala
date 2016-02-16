@@ -4,6 +4,7 @@ package Translation
   * Created by Jing Ao on 2016/2/15.
   */
 
+import Message.Message
 import StackNode.QListNode
 import XPath._
 import scala.collection.mutable.ListBuffer
@@ -41,7 +42,7 @@ class PredADNY(id: Int, label: String) extends TTNode(id, label) {
     }
     r
   }
-  override def doMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[WaitListNode], test: String,
+  override def doMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[Message], test: String,
                        qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
     //if (!rStack.top) {
     Map
@@ -50,7 +51,7 @@ class PredADNY(id: Int, label: String) extends TTNode(id, label) {
     newQLNode.doWork(toSend, sendList, test, qforx1, qforx2, redList)
     (0, 0, 0)
   }
-  override def doNotMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[WaitListNode], test: String,
+  override def doNotMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[Message], test: String,
                           qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
     //if (!rStack.top) {
     qforx1 += new QListNode(q3, null)

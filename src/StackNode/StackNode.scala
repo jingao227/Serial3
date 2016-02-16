@@ -1,5 +1,6 @@
 package StackNode
 
+import Message.Message
 import Translation.{WaitListNode, TTNode}
 
 import scala.collection.mutable._
@@ -8,6 +9,6 @@ import scala.collection.mutable._
   */
 class StackNode(stack: Stack[StackNode]) {
   def getRank: Int = ???
-  def doEachWork(toSend: scala.Boolean, sendList: ListBuffer[WaitListNode], test: String, qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): Unit = ???
+  def doEachWork(toSend: scala.Boolean, sendList: ListBuffer[Message], test: String, qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): Unit = ???
   def doEachReduce: Unit = ???
 }
