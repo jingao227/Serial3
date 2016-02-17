@@ -9,7 +9,7 @@ import StackNode._
 /**
   * Created by Jing Ao on 2016/2/15.
   */
-class SAXHandler(var rank: Int, stack: Stack[StackNode]) extends scala.xml.parsing.FactoryAdapter { // stack: Stack[StackNode], mainActor: ActorRef
+class SAXHandler(var rank: Int, mainActor: ActorRef) extends scala.xml.parsing.FactoryAdapter { // stack: Stack[StackNode], mainActor: ActorRef
   //var mainActor: ActorRef = null
   /*
   def startParse(root: TTNode) = {
@@ -37,32 +37,33 @@ class SAXHandler(var rank: Int, stack: Stack[StackNode]) extends scala.xml.parsi
   override def startElement(uri: String, _localName: String, qname: String, attributes: Attributes): Unit = {
     rank = rank + 1
     //println("<" + qname + "> of " + rank)
-    //mainActor ! (0, qname, rank)
+    mainActor ! (0, qname, rank)
 
-    if (rank == stack.top.getRank) {
-      val qforx1 = new ListBuffer[QListNode]
-      val qforx2 = new ListBuffer[QListNode]
-      val redList = new ListBuffer[QListNode]
-      val sendList = new ListBuffer[Message]
-      stack.pop().doEachWork(false, sendList, qname, qforx1, qforx2, redList)
-    }
+//    if (rank == stack.top.getRank) {
+//      val qforx1 = new ListBuffer[QListNode]
+//      val qforx2 = new ListBuffer[QListNode]
+//      val redList = new ListBuffer[QListNode]
+//      val sendList = new ListBuffer[Message]
+//      stack.pop().doEachWork(false, sendList, qname, qforx1, qforx2, redList)
+//    }
 
   }
 
   override def endElement(uri: String, _localName: String, qname: String): Unit = {
     //println("</" + qname + "> of " + rank)
-    //mainActor ! (1, qname, rank)
+    mainActor ! (1, qname, rank)
 
-    if (rank < stack.top.getRank) {
-      stack.pop()
-      //      stack.top match {
-      //        case _: ReduceNode => stack.pop().doEachReduce
-      //        case _ =>
-      //      }
-      while (stack.top.getRank == -1) {
-        stack.pop().doEachReduce
-      }
-    }
+//    if (rank < stack.top.getRank) {
+//      stack.pop()
+//      //      stack.top match {
+//      //        case _: ReduceNode => stack.pop().doEachReduce
+//      //        case _ =>
+//      //      }
+//      while (stack.top.getRank == -1) {
+//        stack.pop().doEachReduce
+//      }
+//    }
+
     rank = rank - 1
   }
   def createNode(pre: String,elemName: String,attribs: scala.xml.MetaData,scope: scala.xml.NamespaceBinding,chIter: List[scala.xml.Node]): scala.xml.Node = ???

@@ -33,8 +33,8 @@ class MainActor(root: TTNode) extends Actor{
   */
 
   //context.setReceiveTimeout(100 millisecond)
-  def receive = {
-    case (_type: Int, test: String, testRank: Int) if _type == 0 => {
+  def doTagWork (_type: Int, test: String, testRank: Int) = {
+    if (_type == 0) {
       if (testRank == stack.top.getRank) {
         val qforx1 = new ListBuffer[QListNode]
         val qforx2 = new ListBuffer[QListNode]
@@ -42,7 +42,41 @@ class MainActor(root: TTNode) extends Actor{
         val sendList = new ListBuffer[Message]
         stack.pop().doEachWork(false, sendList, test, qforx1, qforx2, redList)
       }
+    } else {
+      if (testRank < stack.top.getRank) {
+        stack.pop()
+        while (stack.top.getRank == -1) {
+          stack.pop().doEachReduce
+        }
+      }
     }
+  }
+
+  def doWaitListsWork = {}
+
+  def receive = {
+    case (_type: Int, test: String, testRank: Int) => { doTagWork(_type, test, testRank) }
+    /*
+                                                      {
+      if (_type == 0) {
+        if (testRank == stack.top.getRank) {
+          val qforx1 = new ListBuffer[QListNode]
+          val qforx2 = new ListBuffer[QListNode]
+          val redList = new ListBuffer[QListNode]
+          val sendList = new ListBuffer[Message]
+          stack.pop().doEachWork(false, sendList, test, qforx1, qforx2, redList)
+        }
+      } else {
+        if (testRank < stack.top.getRank) {
+          stack.pop()
+          while (stack.top.getRank == -1) {
+            stack.pop().doEachReduce
+          }
+        }
+      }
+    }
+    */
+    /*
     case (_type: Int, test: String, testRank: Int) if _type == 1 => {
       if (testRank < stack.top.getRank) {
         stack.pop()
@@ -51,7 +85,8 @@ class MainActor(root: TTNode) extends Actor{
         }
       }
     }
-    //case _ =>
+    */
+    case _ =>
     /*
     case (_type: Int, test: String, testRank: Int) => {
       //implicit val timeout = Timeout()
@@ -82,6 +117,6 @@ class MainActor(root: TTNode) extends Actor{
 }
 
 object MainActor {
-  def props(xmlURI: String, root: TTNode) = Props(new MainActor(root))
+  def props(root: TTNode) = Props(new MainActor(root))
 }
 

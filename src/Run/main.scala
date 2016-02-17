@@ -52,7 +52,7 @@ object main {
   }
 
   def main(args:Array[String]): Unit = {
-    val xmlURI = "D:/Data/dblp/dblp.xml"
+    //val xmlURI = "D:/Data/dblp/dblp.xml"
     //val xmlURI = "D:/Data/selfmade/books4.xml"
     //val xmlURI = "E:/Data/selfmade/books2.xml"
     /*  == Scala ==
@@ -92,39 +92,41 @@ object main {
     root.rStack.push(false)
     root.setOutput(true)
 
-    val stack = new Stack[StackNode]                                //  在main中执行parse
-    val originqList = new ListBuffer[QListNode]
-    originqList += new QListNode(root, null)
-    val originStackNode = new QList(stack, 1, originqList)
-    stack.push(originStackNode)
-
-    val parser = XMLReaderFactory.createXMLReader()
-    val saxhandler = new SAXHandler(0, stack)
-
-    System.setProperty("entityExpansionLimit", "3200000")
-    parser.setContentHandler(saxhandler)
-
-    println("Start Timing!")
-    val startTime = System.currentTimeMillis()
-    parser.parse(xmlURI)
-    println("End Timing!")
-    println("WorkTime: " + (System.currentTimeMillis() - startTime))
+//    val stack = new Stack[StackNode]                                //  在main中执行parse
+//    val originqList = new ListBuffer[QListNode]
+//    originqList += new QListNode(root, null)
+//    val originStackNode = new QList(stack, 1, originqList)
+//    stack.push(originStackNode)
+//
+//    val parser = XMLReaderFactory.createXMLReader()
+//    val saxhandler = new SAXHandler(0, stack)
+//
+//    System.setProperty("entityExpansionLimit", "3200000")
+//    parser.setContentHandler(saxhandler)
+//
+//    println("Start Timing!")
+//    val startTime = System.currentTimeMillis()
+//    parser.parse(xmlURI)
+//    println("End Timing!")
+//    println("WorkTime: " + (System.currentTimeMillis() - startTime))
 
     //val system = ActorSystem("mySystem")                           //  在MainActor中执行parse
     //val mainActor = system.actorOf(Props[MainActor](new MainActor(stack)), "mainActor")
 
-    /*                                                               //   标签作为消息传递给Actor而不是在Actor中解析
-    val system = ActorSystem("mySystem")
+
+    val system = ActorSystem("mySystem")                            //   标签作为消息传递给Actor而不是在Actor中解析
     val mainActor = system.actorOf(Props[MainActor](new MainActor(root)), "mainActor")
-    val parser = XMLReaderFactory.createXMLReader()
-    val saxHandler = new SAXHandler(0, mainActor)
-    System.setProperty("entityExpansionLimit", "3200000")
-    parser.setContentHandler(saxHandler)
-    println("Start Timing!")
-    val startTime = System.currentTimeMillis()
-    parser.parse(xmlURI)
-    println("End Timing!")
-    println("WorkTime: " + (System.currentTimeMillis() - startTime))
-    */
+    val saxActor = system.actorOf(Props[SAXActor](new SAXActor(mainActor)), "SAXActor")
+
+//    val parser = XMLReaderFactory.createXMLReader()
+//    val saxHandler = new SAXHandler(0, mainActor)
+//    System.setProperty("entityExpansionLimit", "3200000")
+//    parser.setContentHandler(saxHandler)
+//
+//    println("Start Timing!")
+//    val startTime = System.currentTimeMillis()
+//    parser.parse(xmlURI)
+//    println("End Timing!")
+//    println("WorkTime: " + (System.currentTimeMillis() - startTime))
   }
 }
