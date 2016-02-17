@@ -13,22 +13,20 @@ class WaitList(idforWaitList: Int) {
   def getID = idforWaitList
   def getSize = listSize
   //def addWaitList(newNode: WaitListNode) = waitList += newNode ; listSize = listSize + 1
-  def addWaitList: Int = {
-    waitList += new WaitListNode(listSize + 1, false)
-    listSize = listSize + 1
-    listSize
-  }
-  def isEmpty: scala.Boolean = {
-    if (waitList.nonEmpty) false
-    else true
-  }
+  def isEmpty: scala.Boolean = !(waitList.nonEmpty)
+
   def hasTrue: scala.Boolean = {
     for (element <- waitList) if (element.getResult) true
     false
   }
-  def updateList = {
+  def addWaitList(): Int = {
+    waitList += new WaitListNode(listSize + 1, false)
+    listSize = listSize + 1
+    listSize
+  }
+  def updateList() = {
     //  淘汰过期查询
   }
-
-  def removeWaitList = {}
+  def removeWaitList() = {}
+  def clearWaitList() = waitList.clear()
 }
