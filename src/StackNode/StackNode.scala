@@ -10,5 +10,6 @@ import scala.collection.mutable._
 class StackNode(stack: Stack[StackNode]) {
   def getRank: Int = ???
   def doEachWork(toSend: scala.Boolean, sendList: ListBuffer[Message], test: String, qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): Unit = ???
-  def doEachReduce: Unit = ???
+  def doEachReduce(): Unit = ???
+  def doStayWork(toStayList: ListBuffer[QListNode]): Unit = ???
 }

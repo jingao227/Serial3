@@ -1,9 +1,10 @@
 package Run
 
-import Message.Message
+import Message.{Tag, Message}
 import StackNode._
 import Translation.{WaitListNode, TTNode}
 import org.xml.sax.InputSource
+import scala.collection.mutable
 import scala.collection.mutable._
 import akka.actor.{ReceiveTimeout, Actor, Props}
 import scala.concurrent.duration._
@@ -12,12 +13,13 @@ import org.xml.sax.helpers.XMLReaderFactory
   * Created by Jing Ao on 2016/2/15.
   */
 class MainActor(root: TTNode) extends Actor{
-  val stack = new Stack[StackNode]
+  val stack = new mutable.Stack[StackNode]
   val originqList = new ListBuffer[QListNode]
   originqList += new QListNode(root, null)
   val originStackNode = new QList(stack, 1, originqList)
   stack.push(originStackNode)
 
+  val tagCache = new mutable.Queue[Tag]
   /*
   val parser = XMLReaderFactory.createXMLReader()
   val saxhandler = new SAXHandler(0, stack)
@@ -33,26 +35,50 @@ class MainActor(root: TTNode) extends Actor{
   */
 
   //context.setReceiveTimeout(100 millisecond)
-  def doTagWork (_type: Int, test: String, testRank: Int) = {
+  def doQListWork (_type: Int, test: String, testRank: Int) = {
     if (_type == 0) {
       if (testRank == stack.top.getRank) {
         val qforx1 = new ListBuffer[QListNode]
         val qforx2 = new ListBuffer[QListNode]
         val redList = new ListBuffer[QListNode]
         val sendList = new ListBuffer[Message]
-        stack.pop().doEachWork(false, sendList, test, qforx1, qforx2, redList)
+        stack.pop().doEachWork(toSend = false, sendList, test, qforx1, qforx2, redList)
       }
     } else {
       if (testRank < stack.top.getRank) {
-        stack.pop()
+        stack.pop().doStayWork(new ListBuffer[QListNode])
         while (stack.top.getRank == -1) {
-          stack.pop().doEachReduce
+          stack.pop().doEachReduce()
         }
       }
     }
   }
 
-  def doWaitListsWork = {}
+  def doTagWork (_type: Int, test: String, testRank: Int) = {
+    if (stack.top.getRank == -2) {
+      tagCache += new Tag(_type, test, testRank)
+      stack.pop.doStayWork(new ListBuffer[QListNode])
+      while (stack.top.getRank == -1) {
+        stack.pop().doEachReduce()
+      }
+    }
+    else {
+      while (stack.top.getRank != -2 && tagCache.nonEmpty) {
+        // 从tagCache取出一个标签给doQListWork
+        val tag: Tag = tagCache.dequeue()
+        doQListWork(tag.getType, tag.getTest, tag.getTestRank)
+      }
+      //if (stack.top.getRank == -2 && tagCache.nonEmpty) {} // (_type: Int, test: String, testRank: Int)加入队尾
+      //if (stack.top.getRank == -2 && tagCache.isEmpty) {} // (_type: Int, test: String, testRank: Int)加入队尾
+      if (stack.top.getRank == -2) tagCache += new Tag(_type, test, testRank) // (_type: Int, test: String, testRank: Int)加入队尾
+      else if (tagCache.isEmpty) doQListWork(_type, test, testRank)
+      while (stack.top.getRank == -1) {
+        stack.pop().doEachReduce()
+      }
+    }
+  }
+
+  def doResultWork() = {}
 
   def receive = {
     case (_type: Int, test: String, testRank: Int) => { doTagWork(_type, test, testRank) }

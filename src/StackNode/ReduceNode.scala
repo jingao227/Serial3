@@ -8,7 +8,7 @@ import scala.collection.mutable._
   */
 class ReduceNode(stack: Stack[StackNode], redList: ListBuffer[QListNode]) extends StackNode(stack) {
   override def getRank = -1
-  override def doEachReduce = {
+  override def doEachReduce() = {
     redList.foreach {
       case element => element.getttNode.Reduce
     }

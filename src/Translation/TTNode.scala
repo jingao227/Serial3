@@ -12,6 +12,7 @@ class TTNode(id: Int, label: String) {
   val rStack = new Stack[scala.Boolean]
   val waitLists = new ListBuffer[WaitList]
   var listSize: Int = 0
+//  val nodeType: Int = ???
 
   var q1: TTNode= null
   var q2: TTNode = null
@@ -25,15 +26,22 @@ class TTNode(id: Int, label: String) {
 
   def getSize = listSize
   def getID = id
+//  def getNodeType = nodeType
   def setOutput(o: scala.Boolean) = output = o
 
-  def addWaitLists: WaitList = {
+  def addWaitLists(): WaitList = {
     val newlist = new WaitList(listSize + 1)
     waitLists += newlist
     newlist
   }
-  def receiveTrueforx1 = if (!rStack.top) { rStack.pop() ; rStack.push(true) }   // 是否放在子类中？
+  def removeWaitLists(waitList: WaitList) = {
+    for (element <- waitLists) waitLists.remove(waitLists.indexOf(waitList))
+  }
 
+  def receiveTrueforx1 = if (!rStack.top) { rStack.pop() ; rStack.push(true) }
+  def receiveResult(qListNode: QListNode): scala.Boolean = ???  //  返回值代表waitList是否为Empty，不是null
+  def searchTrue(waitList: WaitList): scala.Boolean = ???
+  def remainReceiving(waitList: WaitList): scala.Boolean = ???
 //  def packMessage (qa: Int, qb: Int, qc: Int, sendList: ListBuffer[Message], qListNode: QListNode) = {
 //    //val waitList: WaitList = addWaitLists
 //    //waitList = addWaitLists
@@ -47,16 +55,24 @@ class TTNode(id: Int, label: String) {
                  qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = ???
   def doWork(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[Message], test: String,
              qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
+    if (qlistNode.getwaitList != null && !qlistNode.getwaitList.isEmpty) receiveResult(qlistNode)
     if (test == label) doMatch(toSend, qlistNode, sendList, test, qforx1, qforx2, redList)
     else doNotMatch(toSend, qlistNode, sendList, test, qforx1, qforx2, redList)
+  }
+  def doStayWork(qListNode: QListNode, toStayList: ListBuffer[QListNode]): Unit = {
+    if (qListNode.getwaitList != null && !qListNode.getwaitList.isEmpty) {
+      // 返回值代表是否还有待接收的结果
+      if (!receiveResult(qListNode)) removeWaitLists(qListNode.getwaitList)
+      else toStayList += qListNode
+    }
   }
 
   def hasq2 = if (q2 != null) true else false
   def getResult = rStack.pop()
   def alreadyTrue = rStack.top
 
-  def Map: Unit = ???
-  def Reduce: Unit = ???
+  def Map(): Unit = ???
+  def Reduce(): Unit = ???
   def MapAllChild(p: TTNode): Unit = {
     //var p = c
     p.rStack.push(false)

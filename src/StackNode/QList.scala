@@ -29,6 +29,13 @@ class QList(stack: Stack[StackNode], rank: Int, qlist: ListBuffer[QListNode]) ex
     if (qforx2.nonEmpty) stack.push(new QList(stack, rank, qforx2))
     if (redList.nonEmpty) stack.push(new ReduceNode(stack, redList))
     if (qforx1.nonEmpty) stack.push(new QList(stack, rank + 1, qforx1))
-    //  if sendList.nonEmpty foreach element <- sendList element.send
+    //TODO: if sendList.nonEmpty foreach element <- sendList element.send
+  }
+
+  override def doStayWork(toStayList: ListBuffer[QListNode]): Unit = {
+    for (element <- qlist) {
+      element.doStayWork(toStayList)
+    }
+    if (toStayList.nonEmpty) stack.push(new StayNode(stack, toStayList))
   }
 }
