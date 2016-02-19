@@ -34,6 +34,7 @@ class SAXHandler(var rank: Int, mainActor: ActorRef) extends scala.xml.parsing.F
     parser.parse(source, this)
   }
   */
+  override def startDocument() = {}
   override def startElement(uri: String, _localName: String, qname: String, attributes: Attributes): Unit = {
     rank = rank + 1
     //println("<" + qname + "> of " + rank)
@@ -66,6 +67,8 @@ class SAXHandler(var rank: Int, mainActor: ActorRef) extends scala.xml.parsing.F
 
     rank = rank - 1
   }
+
+  override def endDocument() = mainActor ! (2, "EndDocument", 0)
   def createNode(pre: String,elemName: String,attribs: scala.xml.MetaData,scope: scala.xml.NamespaceBinding,chIter: List[scala.xml.Node]): scala.xml.Node = ???
   def createProcInstr(target: String,data: String): Seq[scala.xml.ProcInstr] = ???
   def createText(text: String): scala.xml.Text = ???

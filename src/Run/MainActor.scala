@@ -36,13 +36,14 @@ class MainActor(root: TTNode) extends Actor{
 
   //context.setReceiveTimeout(100 millisecond)
   def doQListWork (_type: Int, test: String, testRank: Int) = {
+    println(_type + test + testRank)
     if (_type == 0) {
       if (testRank == stack.top.getRank) {
         val qforx1 = new ListBuffer[QListNode]
         val qforx2 = new ListBuffer[QListNode]
         val redList = new ListBuffer[QListNode]
         val sendList = new ListBuffer[Message]
-        stack.pop().doEachWork(toSend = false, sendList, test, qforx1, qforx2, redList)
+        stack.pop().doEachWork(toSend = true, sendList, test, qforx1, qforx2, redList)
       }
     } else {
       if (testRank < stack.top.getRank) {
@@ -55,33 +56,63 @@ class MainActor(root: TTNode) extends Actor{
   }
 
   def doTagWork (_type: Int, test: String, testRank: Int) = {
+//    if (stack.top.getRank == -2) {
+//      tagCache += new Tag(_type, test, testRank)
+//      stack.pop.doStayWork(new ListBuffer[QListNode])
+//      while (stack.top.getRank == -1) {
+//        stack.pop().doEachReduce()
+//      }
+//    } else {
+//      while (stack.top.getRank != -2 && tagCache.nonEmpty) {
+//        // 从tagCache取出一个标签给doQListWork
+//        val tag: Tag = tagCache.dequeue()
+//        doQListWork(tag.getType, tag.getTest, tag.getTestRank)
+//      }
+//      //if (stack.top.getRank == -2 && tagCache.nonEmpty) {} // (_type: Int, test: String, testRank: Int)加入队尾
+//      //if (stack.top.getRank == -2 && tagCache.isEmpty) {} // (_type: Int, test: String, testRank: Int)加入队尾
+//      if (stack.top.getRank == -2) tagCache += new Tag(_type, test, testRank) // (_type: Int, test: String, testRank: Int)加入队尾
+//      else if (tagCache.isEmpty) doQListWork(_type, test, testRank)
+//      while (stack.top.getRank == -1) {
+//        stack.pop().doEachReduce()
+//      }
+//    }
     if (stack.top.getRank == -2) {
       tagCache += new Tag(_type, test, testRank)
       stack.pop.doStayWork(new ListBuffer[QListNode])
       while (stack.top.getRank == -1) {
         stack.pop().doEachReduce()
       }
-    }
-    else {
       while (stack.top.getRank != -2 && tagCache.nonEmpty) {
-        // 从tagCache取出一个标签给doQListWork
         val tag: Tag = tagCache.dequeue()
         doQListWork(tag.getType, tag.getTest, tag.getTestRank)
       }
-      //if (stack.top.getRank == -2 && tagCache.nonEmpty) {} // (_type: Int, test: String, testRank: Int)加入队尾
-      //if (stack.top.getRank == -2 && tagCache.isEmpty) {} // (_type: Int, test: String, testRank: Int)加入队尾
-      if (stack.top.getRank == -2) tagCache += new Tag(_type, test, testRank) // (_type: Int, test: String, testRank: Int)加入队尾
-      else if (tagCache.isEmpty) doQListWork(_type, test, testRank)
-      while (stack.top.getRank == -1) {
-        stack.pop().doEachReduce()
-      }
-    }
+    } else doQListWork(_type, test, testRank)
   }
 
   def doResultWork() = {}
 
+  def doWorkIfNotEnd(_type: Int, test: String, testRank: Int) = {
+    if (_type == 2) {
+      while (stack.top.getRank == -2) stack.pop()   //  因为用SAX模拟时，已经到文档结束了就肯定不能再接到结果消息，而stay就是为了后面接到结果消息，所以压入stay就没有意义了，直接弹出
+      while (stack.top.getRank == -1) stack.pop().doEachReduce()
+      if (stack.top.getRank != -2) {
+        println("Came to document end.")
+        var tag: Tag = null
+        while (tagCache.nonEmpty) {
+          tag = tagCache.dequeue()
+          doTagWork(tag.getType, tag.getTest, tag.getTestRank)
+          while (stack.top.getRank == -2) stack.pop()
+          while (stack.top.getRank == -1) stack.pop().doEachReduce()
+        }
+      }
+    } else doTagWork(_type, test, testRank)
+  }
+
   def receive = {
-    case (_type: Int, test: String, testRank: Int) => { doTagWork(_type, test, testRank) }
+    case (_type: Int, test: String, testRank: Int) => {
+      //doTagWork(_type, test, testRank)
+      doWorkIfNotEnd(_type, test, testRank)
+    }
     /*
                                                       {
       if (_type == 0) {

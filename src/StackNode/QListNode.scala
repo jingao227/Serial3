@@ -23,7 +23,7 @@ class QListNode(ttNode: TTNode, var waitList: WaitList) {
 //  def receiveMessage = {}
 
   def packMessage (qa: Int, qb: Int, qc: Int, sendList: ListBuffer[Message]) = {
-    var waitListNodeID: Int = ???
+    var waitListNodeID: Int = 0
     if (waitList == null) { waitList = ttNode.addWaitLists(); waitListNodeID = 1 }
     else waitListNodeID = waitList.addWaitList()
     sendList += new Message(ttNode.getID, waitList.getID, waitListNodeID, qa, qb, qc)

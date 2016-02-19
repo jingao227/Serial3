@@ -32,10 +32,14 @@ class TTNode(id: Int, label: String) {
   def addWaitLists(): WaitList = {
     val newlist = new WaitList(listSize + 1)
     waitLists += newlist
+    listSize = listSize + 1
     newlist
   }
   def removeWaitLists(waitList: WaitList) = {
-    for (element <- waitLists) waitLists.remove(waitLists.indexOf(waitList))
+    //val index: Int = waitLists.indexOf(waitList)
+    //for (element <- waitLists) {
+    waitLists.remove(waitLists.indexOf(waitList))
+    //}
   }
 
   def receiveTrueforx1 = if (!rStack.top) { rStack.pop() ; rStack.push(true) }

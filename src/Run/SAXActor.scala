@@ -8,8 +8,8 @@ import org.xml.sax.helpers.XMLReaderFactory
   * Created by aojing on 2016/2/17.
   */
 class SAXActor(mainActor: ActorRef) extends Actor {
-  //val xmlURI = "D:/Data/dblp/dblp.xml"
-  val xmlURI = "D:/Data/selfmade/books.xml"
+  //val xmlURI = "E:/Data/dblp/dblp.xml"
+  val xmlURI = "E:/Data/selfmade/books2.xml"
   val parser = XMLReaderFactory.createXMLReader()
   val saxHandler = new SAXHandler(0, mainActor)
   System.setProperty("entityExpansionLimit", "3200000")

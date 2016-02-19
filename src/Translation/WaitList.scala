@@ -37,7 +37,11 @@ class WaitList(idforWaitList: Int) {
   def updateList() = {
     //  淘汰过期查询
     val currentTime: Long = System.currentTimeMillis()
-    for (element <- waitList) if (element.outOfDate(currentTime)) waitList.remove(waitList.indexOf(element))
+    for (element <- waitList) {
+      if (element.outOfDate(currentTime)) {
+        waitList.remove(waitList.indexOf(element))
+      }
+    }
   }
   def removeWaitList() = {}
   def clearWaitList() = waitList.clear()
