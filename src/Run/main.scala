@@ -6,50 +6,51 @@ import org.xml.sax.helpers.XMLReaderFactory
 import StackNode.{QList, QListNode, StackNode}
 import Translation.TTNode
 import akka.actor.{ActorRef, Props, ActorSystem}
-import scala.collection.mutable.{ListBuffer, Stack}
+import scala.collection.mutable
+import scala.collection.mutable.{ListBuffer, Stack, Map}
 /**
   * Created by Jing Ao on 2016/2/15.
   */
 object main {
-  def translate (path: Path): TTNode = {
-    if (path.hasq1 && path.isPC) {
-      val root = new PathPCY(1, path.getTest)
-      root.translate(path)
-      root
-    } else if (!path.hasq1 && path.isPC) {
-      val root = new PathPCN(1, path.getTest)
-      root.translate(path)
-      root
-    } else if (path.hasq1 && !path.isPC) {
-      val root = new PathADY(1, path.getTest)
-      root.translate(path)
-      root
-    } else {
-      val root = new PathADN(1, path.getTest)
-      root.translate(path)
-      root
-    }
-  }
-
-  def translate (step: Step): TTNode = {
-    if (step.hasq1 && step.isPC) {
-      val root = new StepPCY(1, step.getTest)
-      root.translate(step)
-      root
-    } else if (step.hasq1 && step.isPC) {
-      val root = new StepPCN(1, step.getTest)
-      root.translate(step)
-      root
-    } else if (step.hasq1 && step.isPC) {
-      val root = new StepADY(1, step.getTest)
-      root.translate(step)
-      root
-    } else {
-      val root = new StepADN(1, step.getTest)
-      root.translate(step)
-      root
-    }
-  }
+//  def translate (path: Path, ttNodeIndex: mutable.Map[Int, TTNode]): TTNode = {
+//    if (path.hasq1 && path.isPC) {
+//      val root = new PathPCY(1, path.getTest)
+//      root.translate(path, ttNodeIndex)
+//      root
+//    } else if (!path.hasq1 && path.isPC) {
+//      val root = new PathPCN(1, path.getTest)
+//      root.translate(path, ttNodeIndex)
+//      root
+//    } else if (path.hasq1 && !path.isPC) {
+//      val root = new PathADY(1, path.getTest)
+//      root.translate(path, ttNodeIndex)
+//      root
+//    } else {
+//      val root = new PathADN(1, path.getTest)
+//      root.translate(path, ttNodeIndex)
+//      root
+//    }
+//  }
+//
+//  def translate (step: Step, ttNodeIndex: mutable.Map[Int, TTNode]): TTNode = {
+//    if (step.hasq1 && step.isPC) {
+//      val root = new StepPCY(1, step.getTest)
+//      root.translate(step, ttNodeIndex)
+//      root
+//    } else if (step.hasq1 && step.isPC) {
+//      val root = new StepPCN(1, step.getTest)
+//      root.translate(step, ttNodeIndex)
+//      root
+//    } else if (step.hasq1 && step.isPC) {
+//      val root = new StepADY(1, step.getTest)
+//      root.translate(step, ttNodeIndex)
+//      root
+//    } else {
+//      val root = new StepADN(1, step.getTest)
+//      root.translate(step, ttNodeIndex)
+//      root
+//    }
+//  }
 
   def main(args:Array[String]): Unit = {
     //val xmlURI = "D:/Data/dblp/dblp.xml"
@@ -67,6 +68,7 @@ object main {
     parser.parse(source, handler1)
     */
     //val parser = XMLReaderFactory.createXMLReader()
+//    val ttNodeIndex = mutable.Map[Int, TTNode]()
 
 //    val step1 = new Step(1, "TITLE", null)             //  //author
 //    val step2 = new Step(1, "AUTHOR", null)              //  /title
@@ -86,11 +88,11 @@ object main {
     val step3 = new Step(1, "ITEM", pred1)                //  //inproceedings[/title]
     val path1 = new Path(step3, new Path(step1, null))    //  //inproceedings[/title]//author
     val step4 = new Step(1, "BOOKS", null)                //  //dblp
-    val path = new Path(step4, path1)                     //  //dblp//inproceedings[/title]//author
+    val query = new Path(step4, path1)                     //  //dblp//inproceedings[/title]//author
 
-    val root = translate(path)
-    root.rStack.push(false)
-    root.setOutput(true)
+//    val root = translate(path, ttNodeIndex)
+//    root.rStack.push(false)
+//    root.setOutput(true)
 
 //    val stack = new Stack[StackNode]                                //  在main中执行parse
 //    val originqList = new ListBuffer[QListNode]
@@ -115,7 +117,7 @@ object main {
 
 
     val system = ActorSystem("mySystem")                            //   标签作为消息传递给Actor而不是在Actor中解析
-    val mainActor = system.actorOf(Props[MainActor](new MainActor(root)), "mainActor")
+    val mainActor = system.actorOf(Props[MainActor](new MainActor(query)), "mainActor")
     val saxActor = system.actorOf(Props[SAXActor](new SAXActor(mainActor)), "SAXActor")
 
 //    val parser = XMLReaderFactory.createXMLReader()

@@ -2,7 +2,8 @@ package Run
 
 import Message.{Tag, Message}
 import StackNode._
-import Translation.{WaitListNode, TTNode}
+import Translation._
+import XPath.{XPath, Path, Pred, Step}
 import org.xml.sax.InputSource
 import scala.collection.mutable
 import scala.collection.mutable._
@@ -12,14 +13,23 @@ import org.xml.sax.helpers.XMLReaderFactory
 /**
   * Created by Jing Ao on 2016/2/15.
   */
-class MainActor(root: TTNode) extends Actor{
+class MainActor(query: Path) extends Actor{
+  val ttNodeIndex = mutable.Map[Int, TTNode]()
+
+  val root = translate(query, ttNodeIndex)
+  root.rStack.push(false)
+  root.setOutput(true)
+
   val stack = new mutable.Stack[StackNode]
-  val originqList = new ListBuffer[QListNode]
-  originqList += new QListNode(root, null)
-  val originStackNode = new QList(stack, 1, originqList)
-  stack.push(originStackNode)
+//  val originqList = new ListBuffer[QListNode]
+//  originqList += new QListNode(root, null)
+//  val originStackNode = new QList(stack, 1, originqList)
+//  stack.push(originStackNode)
 
   val tagCache = new mutable.Queue[Tag]
+
+  val testQueryList = List(new Message(0, 0, 0, 1, 0, 0))
+  self ! testQueryList
   /*
   val parser = XMLReaderFactory.createXMLReader()
   val saxhandler = new SAXHandler(0, stack)
@@ -35,6 +45,49 @@ class MainActor(root: TTNode) extends Actor{
   */
 
   //context.setReceiveTimeout(100 millisecond)
+
+  def translate (path: Path, ttNodeIndex: mutable.Map[Int, TTNode]): TTNode = {
+    if (path.path == null) translate(path.step, ttNodeIndex) else {
+      if (path.hasq1 && path.isPC) {
+        val root = new PathPCY(1, path.getTest)
+        root.translate(path, ttNodeIndex)
+        root
+      } else if (!path.hasq1 && path.isPC) {
+        val root = new PathPCN(1, path.getTest)
+        root.translate(path, ttNodeIndex)
+        root
+      } else if (path.hasq1 && !path.isPC) {
+        val root = new PathADY(1, path.getTest)
+        root.translate(path, ttNodeIndex)
+        root
+      } else {
+        val root = new PathADN(1, path.getTest)
+        root.translate(path, ttNodeIndex)
+        root
+      }
+    }
+  }
+
+  def translate (step: Step, ttNodeIndex: mutable.Map[Int, TTNode]): TTNode = {
+    if (step.hasq1 && step.isPC) {
+      val root = new StepPCY(1, step.getTest)
+      root.translate(step, ttNodeIndex)
+      root
+    } else if (step.hasq1 && step.isPC) {
+      val root = new StepPCN(1, step.getTest)
+      root.translate(step, ttNodeIndex)
+      root
+    } else if (step.hasq1 && step.isPC) {
+      val root = new StepADY(1, step.getTest)
+      root.translate(step, ttNodeIndex)
+      root
+    } else {
+      val root = new StepADN(1, step.getTest)
+      root.translate(step, ttNodeIndex)
+      root
+    }
+  }
+
   def doQListWork (_type: Int, test: String, testRank: Int) = {
     println(_type + test + testRank)
     if (_type == 0) {
@@ -44,6 +97,7 @@ class MainActor(root: TTNode) extends Actor{
         val redList = new ListBuffer[QListNode]
         val sendList = new ListBuffer[Message]
         stack.pop().doEachWork(toSend = true, sendList, test, qforx1, qforx2, redList)
+        if (sendList.nonEmpty) sendQuery(sendList.toList)
       }
     } else {
       if (testRank < stack.top.getRank) {
@@ -108,11 +162,22 @@ class MainActor(root: TTNode) extends Actor{
     } else doTagWork(_type, test, testRank)
   }
 
+  def startQuery(queryList: List[Message]) = {
+    val qList = new QList(stack, 1, new ListBuffer[QListNode])
+    for (element <- queryList) element.addQList(ttNodeIndex, qList)
+    stack.push(qList)
+  }
+
+  def sendQuery(queryList: List[Message]) = {
+    // TODO:获得对方Actor引用，! queryList
+  }
+
   def receive = {
     case (_type: Int, test: String, testRank: Int) => {
       //doTagWork(_type, test, testRank)
-      doWorkIfNotEnd(_type, test, testRank)
+      if (stack.nonEmpty) doWorkIfNotEnd(_type, test, testRank)
     }
+    case (queryList: List[Message]) => {if (stack.isEmpty) startQuery(queryList)}
     /*
                                                       {
       if (_type == 0) {
@@ -174,6 +239,6 @@ class MainActor(root: TTNode) extends Actor{
 }
 
 object MainActor {
-  def props(root: TTNode) = Props(new MainActor(root))
+  def props(query: Path) = Props(new MainActor(query))
 }
 

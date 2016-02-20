@@ -4,14 +4,16 @@ import Message.Message
 import StackNode.QListNode
 import XPath.Pred
 
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 /**
   * Created by Jing Ao on 2016/2/15.
   */
 class PredPCNN(id: Int, label: String, father: TTNode) extends TTNode(id, label) {
   //override val nodeType = 9
-  override def translate(preds: Pred): Int = {
+  override def translate(preds: Pred, ttNodeIndex: mutable.Map[Int, TTNode]): Int = {
     println(this.id + ": " +  this.label + " ")
+    ttNodeIndex += (this.id ->this)
     id
   }
   override def receiveResult(qListNode: QListNode): scala.Boolean = {

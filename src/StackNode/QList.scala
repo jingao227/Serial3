@@ -9,6 +9,7 @@ import scala.collection.mutable.{ListBuffer, Stack}
   * Created by Jing Ao on 2016/2/15.
   */
 class QList(stack: Stack[StackNode], rank: Int, qlist: ListBuffer[QListNode]) extends StackNode(stack) {
+  def getqlist =qlist
   override def getRank = rank
   override def doEachWork(toSend: scala.Boolean, sendList: ListBuffer[Message], test: String,
                           qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]) = {

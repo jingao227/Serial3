@@ -4,15 +4,17 @@ import Message.Message
 import StackNode.QListNode
 import XPath.{Path, Step}
 
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 /**
   * Created by Jing Ao on 2016/2/15.
   */
 class StepPCY(id: Int, label: String) extends TTNode(id, label) {
   //override val nodeType = 2
-  override def translate(path: Path): Int = translate(path.step)
-  override def translate(step: Step): Int = {
+  override def translate(path: Path, ttNodeIndex: mutable.Map[Int, TTNode]): Int = translate(path.step, ttNodeIndex)
+  override def translate(step: Step, ttNodeIndex: mutable.Map[Int, TTNode]): Int = {
     println(this.id + ": " +  this.label + " ")
+    ttNodeIndex += (this.id ->this)
     val cid: Int = id
     if (step.preds.hasq1) {
       if (step.preds.hasq2) {
@@ -31,7 +33,7 @@ class StepPCY(id: Int, label: String) extends TTNode(id, label) {
         else q1 = new PredADNN(cid + 1, step.preds.getTest, null)
       }
     }
-    q1.translate(step.preds)
+    q1.translate(step.preds, ttNodeIndex)
   }
   override def receiveResult(qListNode: QListNode): scala.Boolean = {
     remainReceiving(qListNode.getwaitList)  //  结果为false即waitList.isEmpty也不能从waitLists中remove这个waitList，因为还没遇到nil，这个waitList在后面x2的检查中还有可能再加入

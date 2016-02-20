@@ -7,12 +7,14 @@ package Translation
 import Message.Message
 import XPath._
 import StackNode.QListNode
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
 class PathADY(id: Int, label: String) extends TTNode(id, label) {
   //override val nodeType = 8
-  override def translate(path: Path): Int = {
+  override def translate(path: Path, ttNodeIndex: mutable.Map[Int, TTNode]): Int = {
     println(this.id + ": " +  this.label + " ")
+    ttNodeIndex += (this.id ->this)
     var cid: Int = id
     if(path.step.preds.hasq1) {
       if(path.step.preds.hasq2) {
@@ -31,7 +33,7 @@ class PathADY(id: Int, label: String) extends TTNode(id, label) {
         else q1 = new PredADNN(cid + 1, path.step.preds.getTest, null)
       }
     }
-    cid = q1.translate(path.step.preds)
+    cid = q1.translate(path.step.preds, ttNodeIndex)
 
     if(path.path.hasq1) {
       if(path.path.isPC) {
@@ -50,7 +52,7 @@ class PathADY(id: Int, label: String) extends TTNode(id, label) {
         else q2 = new StepADN(cid + 1, path.path.getTest)
       }
     }
-    q2.translate(path.path)
+    q2.translate(path.path, ttNodeIndex)
   }
   override def getResult = {
     val r = rStack.pop()

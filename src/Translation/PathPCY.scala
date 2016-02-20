@@ -7,12 +7,14 @@ package Translation
 import Message.Message
 import XPath._
 import StackNode.QListNode
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
 class PathPCY(id: Int, label: String) extends TTNode(id, label) {
   //override val nodeType = 6
-  override def translate(path: Path): Int = {
+  override def translate(path: Path, ttNodeIndex: mutable.Map[Int, TTNode]): Int = {
     println(this.id + ": " +  this.label + " ")
+    ttNodeIndex += (this.id ->this)
     var cid: Int = id
     if(path.step.preds.hasq1) {
       if(path.step.preds.hasq2) {
@@ -31,7 +33,7 @@ class PathPCY(id: Int, label: String) extends TTNode(id, label) {
         else q1 = new PredADNN(cid + 1, path.step.preds.getTest, null)
       }
     }
-    cid = q1.translate(path.step.preds)
+    cid = q1.translate(path.step.preds, ttNodeIndex)
 
     if(path.path.hasq1) {
       if(path.path.isPC) {
@@ -50,7 +52,7 @@ class PathPCY(id: Int, label: String) extends TTNode(id, label) {
         else q2 = new StepADN(cid + 1, path.path.getTest)
       }
     }
-    q2.translate(path.path)
+    q2.translate(path.path, ttNodeIndex)
   }
   override def receiveResult(qListNode: QListNode): scala.Boolean = {
     remainReceiving(qListNode.getwaitList)  //  结果为false即waitList.isEmpty也不能从waitLists中remove这个waitList，因为还没遇到nil，这个waitList在后面x2的检查中还有可能再加入

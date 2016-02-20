@@ -4,14 +4,16 @@ import Message.Message
 import StackNode.QListNode
 import XPath.Pred
 
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 /**
   * Created by Jing Ao on 2016/2/15.
   */
 class PredADYY(id: Int, label: String) extends TTNode(id, label) {
   //override val nodeType = 16
-  override def translate(preds: Pred): Int = {
+  override def translate(preds: Pred, ttNodeIndex: mutable.Map[Int, TTNode]): Int = {
     println(this.id + ": " +  this.label + " ")
+    ttNodeIndex += (this.id ->this)
     var cid: Int = id
     if (preds.step.preds.hasq1) {
       if (preds.step.preds.hasq2) {
@@ -30,7 +32,7 @@ class PredADYY(id: Int, label: String) extends TTNode(id, label) {
         else q1 = new PredADNN(cid + 1, preds.step.preds.getTest, null)
       }
     }
-    cid = q1.translate(preds.step.preds)
+    cid = q1.translate(preds.step.preds, ttNodeIndex)
 
     if (preds.preds.hasq1) {
       if (preds.preds.hasq2) {
@@ -49,9 +51,9 @@ class PredADYY(id: Int, label: String) extends TTNode(id, label) {
         else q2 = new PredADNN(cid + 1, preds.preds.getTest, null)
       }
     }
-    cid = q2.translate(preds.preds)
+    cid = q2.translate(preds.preds, ttNodeIndex)
     q3 = new PredADYN(cid + 1, this.label, this)
-    q3.translate(new Pred(preds.step, null))
+    q3.translate(new Pred(preds.step, null), ttNodeIndex)
   }
   override def getResult = {
     val r = rStack.pop()

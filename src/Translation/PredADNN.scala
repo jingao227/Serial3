@@ -7,12 +7,14 @@ package Translation
 import Message.Message
 import XPath._
 import StackNode.QListNode
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
 class PredADNN(id: Int, label: String, father: TTNode) extends TTNode(id, label) {
   //override val nodeType = 13
-  override def translate(preds: Pred): Int = {
+  override def translate(preds: Pred, ttNodeIndex: mutable.Map[Int, TTNode]): Int = {
     println(this.id + ": " +  this.label + " ")
+    ttNodeIndex += (this.id ->this)
     id
   }
   override def getResult = {

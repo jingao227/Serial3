@@ -6,10 +6,11 @@ package Translation
 import Message.Message
 import XPath._
 import StackNode.QListNode
-import scala.collection.mutable._
+import scala.collection.mutable
+import scala.collection.mutable.{Stack, Map, ListBuffer}
 
 class TTNode(id: Int, label: String) {
-  val rStack = new Stack[scala.Boolean]
+  val rStack = new mutable.Stack[scala.Boolean]
   val waitLists = new ListBuffer[WaitList]
   var listSize: Int = 0
 //  val nodeType: Int = ???
@@ -20,9 +21,9 @@ class TTNode(id: Int, label: String) {
 
   var output = false
 
-  def translate(path: Path): Int = ???
-  def translate(preds: Pred): Int = ???
-  def translate(step: Step): Int = ???
+  def translate(path: Path, ttNodeIndex: mutable.Map[Int, TTNode]): Int = ???
+  def translate(preds: Pred, ttNodeIndex: mutable.Map[Int, TTNode]): Int = ???
+  def translate(step: Step, ttNodeIndex: mutable.Map[Int, TTNode]): Int = ???
 
   def getSize = listSize
   def getID = id

@@ -4,14 +4,16 @@ import Message.Message
 import StackNode.QListNode
 import XPath.Pred
 
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 /**
   * Created by Jing Ao on 2016/2/15.
   */
 class PredPCYN(id: Int, label: String, father: TTNode) extends TTNode(id, label) {
   //override val nodeType = 11
-  override def translate(preds: Pred): Int = {
+  override def translate(preds: Pred, ttNodeIndex: mutable.Map[Int, TTNode]): Int = {
     println(this.id + ": " +  this.label + " ")
+    ttNodeIndex += (this.id ->this)
     val cid: Int = id
     if (preds.step.preds.hasq1) {
       if (preds.step.preds.hasq2) {
@@ -30,7 +32,7 @@ class PredPCYN(id: Int, label: String, father: TTNode) extends TTNode(id, label)
         else q1 = new PredADNN(cid + 1, preds.step.preds.getTest, null)
       }
     }
-    q1.translate(preds.step.preds)
+    q1.translate(preds.step.preds, ttNodeIndex)
   }
   override def receiveResult(qListNode: QListNode): scala.Boolean = {
     searchTrue(qListNode.getwaitList)
