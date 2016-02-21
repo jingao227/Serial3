@@ -56,6 +56,7 @@ class TTNode(id: Int, label: String) {
   }
 
 //  def receiveTrueforx1 = if (!rStack.top) { rStack.pop() ; rStack.push(true) }
+  // TODO:所有rStack.top.setValue(true)时如果有sender，向sender发送结果元组（ttNodeID,waitListID,waitListNodeID），sender=self时不发送
   def receiveTrueforx1 = if (!rStack.top.getValue) rStack.top.setValue(true)
   def receiveResult(qListNode: QListNode): scala.Boolean = ???  //  返回值代表waitList是否为Empty，不是null
   def searchTrue(waitList: WaitList): scala.Boolean = ???
