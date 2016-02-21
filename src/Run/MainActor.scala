@@ -143,7 +143,16 @@ class MainActor(query: Path) extends Actor{
     } else doQListWork(_type, test, testRank)
   }
 
-  def doResultWork() = {}
+  def doResultWork(ttNodeID: Int, waitListID: Int, waitListNodeID: Int) = {
+    val waitLists = ttNodeIndex(ttNodeID).waitLists
+    var found: scala.Boolean = false
+    for (element <- waitLists if !found) {
+      if (element.getID == waitListID) {
+        element.receiveTrueForNode(waitListNodeID)
+        found = true
+      }
+    }
+  }
 
   def doWorkIfNotEnd(_type: Int, test: String, testRank: Int) = {
     if (_type == 2) {
@@ -178,6 +187,7 @@ class MainActor(query: Path) extends Actor{
       if (stack.nonEmpty) doWorkIfNotEnd(_type, test, testRank)
     }
     case (queryList: List[Message]) => {if (stack.isEmpty) startQuery(queryList)}
+    case (ttNodeID: Int, waitListID: Int, waitListNodeID: Int) => doResultWork(ttNodeID, waitListID, waitListNodeID)
     /*
                                                       {
       if (_type == 0) {

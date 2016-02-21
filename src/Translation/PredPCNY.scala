@@ -50,24 +50,24 @@ class PredPCNY(id: Int, label: String) extends TTNode(id, label) {
     }
   }
   override def doMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[Message], test: String,
-                       qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
+                       qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): Unit = {
     //if (!rStack.top) {
-    Map
+    Map()
     val newQLNode = new QListNode(q2, null)
     newQLNode.doWork(toSend, sendList, test, qforx1, qforx2, redList)
-    (0, 0, 0)
+    //(0, 0, 0)
     //}
     //q2.doWork(test, qforx1, qforx2, redList)
   }
   override def doNotMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[Message], test: String,
-                          qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
+                          qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): Unit = {
     //if (!rStack.top) {
 //    if (!toSend) qforx2 += new QListNode(q3, null)
 //    else qforx2 += new QListNode(q3, waitList)
     qforx2 += new QListNode(q3, qlistNode.getwaitList)
     val newQLNode = new QListNode(q2, null)
     newQLNode.doWork(toSend, sendList, test, qforx1, qforx2, redList)
-    (0, 0, 0)
+    //(0, 0, 0)
     //}
     //q2.doWork(test, qforx1, qforx2, redList)
   }

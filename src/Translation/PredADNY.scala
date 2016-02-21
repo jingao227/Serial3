@@ -59,22 +59,23 @@ class PredADNY(id: Int, label: String) extends TTNode(id, label) {
     }
   }
   override def doMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[Message], test: String,
-                       qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
+                       qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): Unit = {
     //if (!rStack.top) {
-    Map
+    Map()
     //}
     val newQLNode = new QListNode(q2, null)
     newQLNode.doWork(toSend, sendList, test, qforx1, qforx2, redList)
-    (0, 0, 0)
+    //(0, 0, 0)
   }
   override def doNotMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[Message], test: String,
-                          qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
+                          qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): Unit = {
     //if (!rStack.top) {
     qforx1 += new QListNode(q3, null)
+    if (toSend) qlistNode.packMessage(q3.getID, 0, 0, sendList)
     qforx2 += new QListNode(q3, qlistNode.getwaitList)
     val newQLNode = new QListNode(q2, null)
     newQLNode.doWork(toSend, sendList, test, qforx1, qforx2, redList)
-    if (!toSend) (0, 0, 0) else (q3.getID, 0, 0)
+    //if (!toSend) (0, 0, 0) else (q3.getID, 0, 0)
 //    if (!toSend) {
 //      qforx2 += new QListNode(q3, null)
 //      val newQLNode = new QListNode(q2, null)

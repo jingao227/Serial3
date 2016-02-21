@@ -34,17 +34,19 @@ class StepADN(id: Int, label: String) extends TTNode(id, label) {
     if (!waitList.isEmpty) true else false  //  如果还有等待接收的结果(waitList中还有false)
   }
   override def doMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[Message], test: String,
-                       qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
-    Map   //  没有的Map，就不用Reduce
+                       qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): Unit = {
+    Map()   //  没有的Map，就不用Reduce
     qforx1 += new QListNode(this, null)
+    if (toSend) qlistNode.packMessage(this.id, 0, 0, sendList)
     qforx2 += qlistNode
-    if (!toSend) (0, 0, 0) else (this.id, 0, 0)
+    //if (!toSend) (0, 0, 0) else (this.id, 0, 0)
   }
   override def doNotMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[Message], test: String,
-                          qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
+                          qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): Unit = {
     qforx1 += new QListNode(this, null)
+    if (toSend) qlistNode.packMessage(this.id, 0, 0, sendList)
     qforx2 += qlistNode
-    if (!toSend) (0, 0, 0) else (this.id, 0, 0)
+    //if (!toSend) (0, 0, 0) else (this.id, 0, 0)
   }
 //  override def doStayWork(qListNode: QListNode, toStayList: ListBuffer[QListNode]): Unit = {
 //    //  如果waitList已空或者就根本没向远端请求过qforx1的结果，就不会需要留在栈中等结果

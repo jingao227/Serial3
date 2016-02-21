@@ -57,8 +57,9 @@ class QListNode(ttNode: TTNode, var waitList: WaitList) {
 
   def doWork(toSend: scala.Boolean, sendList: ListBuffer[Message], test: String,
              qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]) = {
-    val (qa: Int, qb: Int, qc: Int) = ttNode.doWork(toSend, this, sendList, test, qforx1, qforx2, redList)
-    if (qa > 0) packMessage(qa, qb, qc, sendList)
+    //val (qa: Int, qb: Int, qc: Int) = ttNode.doWork(toSend, this, sendList, test, qforx1, qforx2, redList)
+    //if (qa > 0) packMessage(qa, qb, qc, sendList)
+    ttNode.doWork(toSend, this, sendList, test, qforx1, qforx2, redList)
   }
 
   def doStayWork(toStayList: ListBuffer[QListNode]) = {

@@ -63,22 +63,23 @@ class PathPCY(id: Int, label: String) extends TTNode(id, label) {
     if (!waitList.isEmpty) true else false  //  如果还有等待接收的结果(waitList中还有false)
   }
   override def doMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[Message], test: String,
-                       qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
-    Map
+                       qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): Unit = {
+    Map()
     qforx1 += new QListNode(q1, null)
     qforx1 += new QListNode(q2, null)
+    if (toSend) qlistNode.packMessage(q1.getID, q2.getID, 0, sendList)
     //redList += new QListNode(this, null)
     //qforx2 += new QListNode(this, waitList)   //  如果先向远端发送并加入了waitList，后来x2中未匹配标签或者不需发送，如果waitList处用null的话，之前加入waitList的标签就会被丢掉了
     redList += qlistNode
     qforx2 += qlistNode
-    if (!toSend) (0, 0, 0) else (q1.getID, q2.getID, 0)
+    //if (!toSend) (0, 0, 0) else (q1.getID, q2.getID, 0)
   }
   override def doNotMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[Message], test: String,
-                          qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
+                          qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): Unit = {
     qforx2 += qlistNode
 //    if (!toSend) qforx2 += new QListNode(this, null)
 //    else qforx2 += new QListNode(this, waitList)
-    (0, 0, 0)   //  需要远端缓存如何表示？
+    //(0, 0, 0)   //  需要远端缓存如何表示？
   }
 //  override def doStayWork(qListNode: QListNode, toStayList: ListBuffer[QListNode]): Unit = {
 //    //  如果waitList已空或者就根本没向远端请求过qforx1的结果，就不会需要留在栈中等结果

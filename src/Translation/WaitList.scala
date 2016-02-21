@@ -29,6 +29,15 @@ class WaitList(idforWaitList: Int) {
     }
     isTrue
   }
+  def receiveTrueForNode(waitListNodeID: Int) = {
+    var found: scala.Boolean = false
+    for (element <- waitList if !found) {
+      if (element.getID == waitListNodeID) {
+        element.receiveTrue()
+        found = true
+      }
+    }
+  }
   def addWaitList(): Int = {
     waitList += new WaitListNode(listSize + 1, false, System.currentTimeMillis())
     listSize = listSize + 1
@@ -43,6 +52,5 @@ class WaitList(idforWaitList: Int) {
       }
     }
   }
-  def removeWaitList() = {}
   def clearWaitList() = waitList.clear()
 }

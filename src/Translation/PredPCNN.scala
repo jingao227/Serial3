@@ -30,20 +30,20 @@ class PredPCNN(id: Int, label: String, father: TTNode) extends TTNode(id, label)
     }
   }
   override def doMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[Message], test: String,
-                       qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
+                       qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): Unit = {
     if ((father == null && !rStack.top) || (father != null && !rStack.top && !father.rStack.top)) {
-      Map
+      Map()
     }
-    (0, 0, 0)
+    //(0, 0, 0)
   }
   override def doNotMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[Message], test: String,
-                          qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
+                          qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): Unit = {
     if ((father == null && !rStack.top) || (father != null && !rStack.top && !father.rStack.top)) {
       qforx2 += qlistNode
 //      if (!toSend) qforx2 += new QListNode(this, null)
 //      else qforx2 += new QListNode(this, waitList)
     }
-    (0, 0, 0)
+    //(0, 0, 0)
   }
 //  override def doStayWork(qListNode: QListNode, toStayList: ListBuffer[QListNode]): Unit = {
 //    //  如果已输出true或者就根本没向远端请求过qforx1的结果，就不会需要留在栈中等结果

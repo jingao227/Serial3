@@ -5,5 +5,7 @@ package Translation
   */
 class WaitListNode(idforx1: Int, var result: scala.Boolean, addTime: Long) {
   def getResult: scala.Boolean = result
+  def getID: Int = idforx1
   def outOfDate(currentTime: Long): scala.Boolean = if (currentTime - addTime > 10) true else false
+  def receiveTrue() = result = true
 }

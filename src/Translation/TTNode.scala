@@ -30,6 +30,17 @@ class TTNode(id: Int, label: String) {
 //  def getNodeType = nodeType
   def setOutput(o: scala.Boolean) = output = o
 
+//  def packMessage (qa: Int, qb: Int, qc: Int, waitList: WaitList, sendList: ListBuffer[Message]): WaitList = {
+//    if (waitList == null) {
+//      val newWaitList = addWaitLists()
+//      sendList += new Message(this.id, newWaitList.getID, 1, qa, qb, qc)
+//      newWaitList
+//    } else {
+//      val waitListNodeID: Int = waitList.addWaitList()
+//      sendList += new Message(this.id, waitList.getID, waitListNodeID, qa, qb, qc)
+//      waitList
+//    }
+//  }
   def addWaitLists(): WaitList = {
     val newlist = new WaitList(listSize + 1)
     waitLists += newlist
@@ -55,11 +66,11 @@ class TTNode(id: Int, label: String) {
 //
 //  }
   def doMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[Message], test: String,
-              qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = ???
+              qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): Unit = ???
   def doNotMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[Message], test: String,
-                 qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = ???
+                 qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): Unit = ???
   def doWork(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[Message], test: String,
-             qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): (Int, Int, Int) = {
+             qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): Unit = {
     if (qlistNode.getwaitList != null && !qlistNode.getwaitList.isEmpty) receiveResult(qlistNode)
     if (test == label) doMatch(toSend, qlistNode, sendList, test, qforx1, qforx2, redList)
     else doNotMatch(toSend, qlistNode, sendList, test, qforx1, qforx2, redList)
