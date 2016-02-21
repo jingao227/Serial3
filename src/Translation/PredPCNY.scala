@@ -83,8 +83,9 @@ class PredPCNY(id: Int, label: String) extends TTNode(id, label) {
 //    }
 //  }
   override def Map() = {
-    rStack.pop()
-    rStack.push(true)
+//    rStack.pop()
+//    rStack.push(true)
+    rStack.top.setValue(true)
   }
   override def Reduce() = {}    //  由于没有q1，所以只要match test就意味着已经得到true，不会Map，因此也就不需要Reduce
 }

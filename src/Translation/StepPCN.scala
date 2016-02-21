@@ -52,8 +52,9 @@ class StepPCN(id: Int, label: String) extends TTNode(id, label) {
 //    }
 //  }
   override def Map() = {
-    rStack.pop()
-    rStack.push(true)
+//    rStack.pop()
+//    rStack.push(true)
+    rStack.top.setValue(true)
   }
-  override def Reduce() = if (output) println("Current result of " + this + " is " + rStack.top)
+  override def Reduce() = if (output) println("Current result of " + this + " is " + rStack.top.getValue)
 }

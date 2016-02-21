@@ -18,10 +18,11 @@ class StepADN(id: Int, label: String) extends TTNode(id, label) {
     id
   }
   override def getResult = {
-    val r = rStack.pop()
+    val r = rStack.pop().getValue
     if (r && rStack.nonEmpty) {
-      rStack.pop()
-      rStack.push(true)
+//      rStack.pop()
+//      rStack.push(true)
+      rStack.top.setValue(true)
     }
     r
   }
@@ -60,8 +61,9 @@ class StepADN(id: Int, label: String) extends TTNode(id, label) {
 //    }
 //  }
   override def Map() = {
-    rStack.pop()
-    rStack.push(true)
+//    rStack.pop()
+//    rStack.push(true)
+    rStack.top.setValue(true)
   }
-  override def Reduce() = if (output) println("Current result of " + this + " is " + rStack.top)
+  override def Reduce() = if (output) println("Current result of " + this + " is " + rStack.top.getValue)
 }

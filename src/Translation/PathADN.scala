@@ -35,10 +35,11 @@ class PathADN(id: Int, label: String) extends TTNode(id, label) {
     q2.translate(path.path, ttNodeIndex)
   }
   override def getResult = {
-    val r = rStack.pop()
+    val r = rStack.pop().getValue
     if (r && rStack.nonEmpty) {
-      rStack.pop()
-      rStack.push(true)
+//      rStack.pop()
+//      rStack.push(true)
+      rStack.top.setValue(true)
     }
     r
   }
@@ -89,14 +90,15 @@ class PathADN(id: Int, label: String) extends TTNode(id, label) {
   override def Map() = {
     //rStack.pop()
     //rStack.push(true)
-    q2.rStack.push(false)
+    q2.rStack.push(new RStackNode(null, 0, 0, 0, false))
   }
   override def Reduce() = {
-    val r = q2.getResult
-    if (!rStack.top){
-      rStack.pop()
-      rStack.push(r)
+    val r: scala.Boolean = q2.getResult
+    if (!rStack.top.getValue){
+//      rStack.pop()
+//      rStack.push(r)
+      rStack.top.setValue(r)
     }
-    if (output) println("Current result of " + this + " is " + rStack.top)
+    if (output) println("Current result of " + this + " is " + rStack.top.getValue)
   }
 }

@@ -120,9 +120,10 @@ class PredPCYY(id: Int, label: String) extends TTNode(id, label) {
   override def Map() = MapAllChild(q1)
   override def Reduce() = {
     val r = ReduceAllChild(q1)
-    if (!rStack.top) {
-      rStack.pop()
-      rStack.push(r)
+    if (!rStack.top.getValue) {
+//      rStack.pop()
+//      rStack.push(r)
+      rStack.top.setValue(r)
     }
   }
 }

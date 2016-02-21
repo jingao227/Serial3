@@ -36,10 +36,11 @@ class StepADY(id: Int, label: String) extends TTNode(id, label) {
     q1.translate(step.preds, ttNodeIndex)
   }
   override def getResult = {
-    val r = rStack.pop()
+    val r = rStack.pop().getValue
     if (r && rStack.nonEmpty) {
-      rStack.pop()
-      rStack.push(true)
+//      rStack.pop()
+//      rStack.push(true)
+      rStack.top.setValue(true)
     }
     r
   }
@@ -83,10 +84,11 @@ class StepADY(id: Int, label: String) extends TTNode(id, label) {
   override def Map() = MapAllChild(q1)
   override def Reduce() = {
     val r = ReduceAllChild(q1)
-    if (!rStack.top) {
-      rStack.pop()
-      rStack.push(r)
+    if (!rStack.top.getValue) {
+//      rStack.pop()
+//      rStack.push(r)
+      rStack.top.setValue(r)
     }
-    if (output) println("Current result of " + this + " is " + rStack.top)
+    if (output) println("Current result of " + this + " is " + rStack.top.getValue)
   }
 }

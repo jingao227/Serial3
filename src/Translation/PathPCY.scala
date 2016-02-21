@@ -92,13 +92,14 @@ class PathPCY(id: Int, label: String) extends TTNode(id, label) {
 //      else toStayList += qListNode
 //    }
 //  }
-  override def Map() = {MapAllChild(q1) ; q2.rStack.push(false)}
+  override def Map() = {MapAllChild(q1) ; q2.rStack.push(new RStackNode(null, 0, 0, 0, false))}
   override def Reduce() = {
     val r = ReduceAllChild(q1) & q2.getResult
-    if (!rStack.top) {
-      rStack.pop()
-      rStack.push(r)
+    if (!rStack.top.getValue) {
+//      rStack.pop()
+//      rStack.push(r)
+      rStack.top.setValue(r)
     }
-    if (output) println("Current result of root: " + this + " is " + rStack.top)
+    if (output) println("Current result of root: " + this + " is " + rStack.top.getValue)
   }
 }

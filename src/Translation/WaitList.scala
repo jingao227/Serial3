@@ -30,13 +30,17 @@ class WaitList(idforWaitList: Int) {
     isTrue
   }
   def receiveTrueForNode(waitListNodeID: Int) = {
-    var found: scala.Boolean = false
-    for (element <- waitList if !found) {
-      if (element.getID == waitListNodeID) {
-        element.receiveTrue()
-        found = true
+    //var found: scala.Boolean = false
+    def findWaitListNode(): Unit = {
+      for (element <- waitList) {
+        if (element.getID == waitListNodeID) {
+          element.receiveTrue()
+          //found = true
+          return
+        }
       }
     }
+    findWaitListNode()
   }
   def addWaitList(): Int = {
     waitList += new WaitListNode(listSize + 1, false, System.currentTimeMillis())

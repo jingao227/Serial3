@@ -35,10 +35,11 @@ class PredADYN(id: Int, label: String, father: TTNode) extends TTNode(id, label)
     q1.translate(preds.step.preds, ttNodeIndex)
   }
   override def getResult = {
-    val r = rStack.pop()
+    val r = rStack.pop().getValue
     if (r && rStack.nonEmpty) {
-      rStack.pop()
-      rStack.push(true)
+//      rStack.pop()
+//      rStack.push(true)
+      rStack.top.setValue(true)
     }
     r
   }
@@ -57,7 +58,7 @@ class PredADYN(id: Int, label: String, father: TTNode) extends TTNode(id, label)
   }
   override def doMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[Message], test: String,
                        qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): Unit = {
-    if ((father == null && !rStack.top) || (father != null && !rStack.top && !father.rStack.top)) {
+    if ((father == null && !rStack.top.getValue) || (father != null && !rStack.top.getValue && !father.rStack.top.getValue)) {
       Map
       qforx1 += new QListNode(q1, null)
       qforx1 += new QListNode(this, null)
@@ -70,7 +71,7 @@ class PredADYN(id: Int, label: String, father: TTNode) extends TTNode(id, label)
   }
   override def doNotMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[Message], test: String,
                           qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): Unit = {
-    if ((father == null && !rStack.top) || (father != null && !rStack.top && !father.rStack.top)) {
+    if ((father == null && !rStack.top.getValue) || (father != null && !rStack.top.getValue && !father.rStack.top.getValue)) {
       qforx1 += new QListNode(this, null)
       if (toSend) qlistNode.packMessage(this.id, 0, 0, sendList)
       qforx2 += qlistNode
@@ -91,9 +92,10 @@ class PredADYN(id: Int, label: String, father: TTNode) extends TTNode(id, label)
   override def Map() = MapAllChild(q1)
   override def Reduce() = {
     val r = ReduceAllChild(q1)
-    if (!rStack.top) {
-      rStack.pop()
-      rStack.push(r)
+    if (!rStack.top.getValue) {
+//      rStack.pop()
+//      rStack.push(r)
+      rStack.top.setValue(r)
     }
   }
 }

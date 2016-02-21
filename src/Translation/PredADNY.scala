@@ -38,10 +38,11 @@ class PredADNY(id: Int, label: String) extends TTNode(id, label) {
     q3.translate(new Pred(preds.step, null), ttNodeIndex)
   }
   override def getResult = {
-    val r = rStack.pop()
+    val r = rStack.pop().getValue
     if (r && rStack.nonEmpty) {
-      rStack.pop()
-      rStack.push(true)
+//      rStack.pop()
+//      rStack.push(true)
+      rStack.top.setValue(true)
     }
     r
   }
@@ -102,8 +103,9 @@ class PredADNY(id: Int, label: String) extends TTNode(id, label) {
 //    }
 //  }
   override def Map() = {
-    rStack.pop()
-    rStack.push(true)
+//    rStack.pop()
+//    rStack.push(true)
+    rStack.top.setValue(true)
   }
   override def Reduce() = {}    //  由于没有q1，所以只要match test就意味着已经得到true，不会Map，因此也就不需要Reduce
 }

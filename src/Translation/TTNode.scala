@@ -10,7 +10,8 @@ import scala.collection.mutable
 import scala.collection.mutable.{Stack, Map, ListBuffer}
 
 class TTNode(id: Int, label: String) {
-  val rStack = new mutable.Stack[scala.Boolean]
+  //val rStack = new mutable.Stack[scala.Boolean]
+  val rStack = new mutable.Stack[RStackNode]
   val waitLists = new ListBuffer[WaitList]
   var listSize: Int = 0
 //  val nodeType: Int = ???
@@ -54,7 +55,8 @@ class TTNode(id: Int, label: String) {
     //}
   }
 
-  def receiveTrueforx1 = if (!rStack.top) { rStack.pop() ; rStack.push(true) }
+//  def receiveTrueforx1 = if (!rStack.top) { rStack.pop() ; rStack.push(true) }
+  def receiveTrueforx1 = if (!rStack.top.getValue) rStack.top.setValue(true)
   def receiveResult(qListNode: QListNode): scala.Boolean = ???  //  返回值代表waitList是否为Empty，不是null
   def searchTrue(waitList: WaitList): scala.Boolean = ???
   def remainReceiving(waitList: WaitList): scala.Boolean = ???
@@ -84,16 +86,18 @@ class TTNode(id: Int, label: String) {
   }
 
   def hasq2 = if (q2 != null) true else false
-  def getResult = rStack.pop()
-  def alreadyTrue = rStack.top
+  def getResult = rStack.pop().getValue
+  def alreadyTrue = rStack.top.getValue
 
   def Map(): Unit = ???
   def Reduce(): Unit = ???
   def MapAllChild(p: TTNode): Unit = {
     //var p = c
-    p.rStack.push(false)
+//  p.rStack.push(false)
+    p.rStack.push(new RStackNode(null, 0, 0, 0, false))
     if (p.hasq2) {
-      p.q3.rStack.push(false)
+//      p.q3.rStack.push(false)
+      p.q3.rStack.push(new RStackNode(null, 0, 0, 0, false))
       MapAllChild(p.q2)
     }
     /*    while (p.hasq2) {

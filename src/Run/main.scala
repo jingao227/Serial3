@@ -83,12 +83,15 @@ object main {
 //                                                        //  /BOOKS/ITEM[AUTHOR]/TITLE
 //                                                        //  若根节点一直未匹配过，则根节点不会做Reduce操作，所以不会有输出（因为输出操作在Reduce中）
     val step1 = new Step(1, "AUTHOR", null)               //  //author
-    val step2 = new Step(1, "TITLE", null)                //  /title
-    val pred1 = new Pred(step2, null)                     //  [/title]
+    val step5 = new Step(1, "ISBN", null)                 //  //ISBN
+    val pred2 = new Pred(step5, null)                     //  [//ISBN]
+    val step2 = new Step(1, "TITLE", null)                //  //TITLE
+    val pred1 = new Pred(step2, pred2)                     //  [//TITLE][//ISBN]
     val step3 = new Step(1, "ITEM", pred1)                //  //inproceedings[/title]
     val path1 = new Path(step3, new Path(step1, null))    //  //inproceedings[/title]//author
     val step4 = new Step(1, "BOOKS", null)                //  //dblp
     val query = new Path(step4, path1)                     //  //dblp//inproceedings[/title]//author
+                                                          //  //BOOKS//ITEM[//TITLE][//ISBN]//AUTHOR
 
 //    val root = translate(path, ttNodeIndex)
 //    root.rStack.push(false)

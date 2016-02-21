@@ -49,7 +49,7 @@ class PredPCYN(id: Int, label: String, father: TTNode) extends TTNode(id, label)
   }
   override def doMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[Message], test: String,
                        qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): Unit = {
-    if ((father == null && !rStack.top) || (father != null && !rStack.top && !father.rStack.top)) {
+    if ((father == null && !rStack.top.getValue) || (father != null && !rStack.top.getValue && !father.rStack.top.getValue)) {
       Map()
       qforx1 += new QListNode(q1, null)
       //redList += new QListNode(this, null)
@@ -61,7 +61,7 @@ class PredPCYN(id: Int, label: String, father: TTNode) extends TTNode(id, label)
   }
   override def doNotMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[Message], test: String,
                           qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): Unit = {
-    if ((father == null && !rStack.top) || (father != null && !rStack.top && !father.rStack.top)) {
+    if ((father == null && !rStack.top.getValue) || (father != null && !rStack.top.getValue && !father.rStack.top.getValue)) {
       qforx2 += qlistNode
 //      if (!toSend) qforx2 += new QListNode(this, null)
 //      else qforx2 += new QListNode(this, waitList)
@@ -82,9 +82,10 @@ class PredPCYN(id: Int, label: String, father: TTNode) extends TTNode(id, label)
   override def Map() = MapAllChild(q1)
   override def Reduce() = {
     val r = ReduceAllChild(q1)
-    if (!rStack.top) {
-      rStack.pop()
-      rStack.push(r)
+    if (!rStack.top.getValue) {
+//      rStack.pop()
+//      rStack.push(r)
+      rStack.top.setValue(r)
     }
   }
 }

@@ -56,10 +56,11 @@ class PredADYY(id: Int, label: String) extends TTNode(id, label) {
     q3.translate(new Pred(preds.step, null), ttNodeIndex)
   }
   override def getResult = {
-    val r = rStack.pop()
+    val r = rStack.pop().getValue
     if (r && rStack.nonEmpty) {
-      rStack.pop()
-      rStack.push(true)
+//      rStack.pop()
+//      rStack.push(true)
+      rStack.top.setValue(true)
     }
     r
   }
@@ -142,9 +143,10 @@ class PredADYY(id: Int, label: String) extends TTNode(id, label) {
   override def Map() = MapAllChild(q1)
   override def Reduce() = {
     val r = ReduceAllChild(q1)
-    if (!rStack.top) {
-      rStack.pop()
-      rStack.push(r)
+    if (!rStack.top.getValue) {
+//      rStack.pop()
+//      rStack.push(r)
+      rStack.top.setValue(r)
     }
   }
 }

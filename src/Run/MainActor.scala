@@ -7,7 +7,7 @@ import XPath.{XPath, Path, Pred, Step}
 import org.xml.sax.InputSource
 import scala.collection.mutable
 import scala.collection.mutable._
-import akka.actor.{ReceiveTimeout, Actor, Props}
+import akka.actor.{ActorRef, ReceiveTimeout, Actor, Props}
 import scala.concurrent.duration._
 import org.xml.sax.helpers.XMLReaderFactory
 /**
@@ -17,7 +17,7 @@ class MainActor(query: Path) extends Actor{
   val ttNodeIndex = mutable.Map[Int, TTNode]()
 
   val root = translate(query, ttNodeIndex)
-  root.rStack.push(false)
+//  root.rStack.push(false)
   root.setOutput(true)
 
   val stack = new mutable.Stack[StackNode]
@@ -145,13 +145,17 @@ class MainActor(query: Path) extends Actor{
 
   def doResultWork(ttNodeID: Int, waitListID: Int, waitListNodeID: Int) = {
     val waitLists = ttNodeIndex(ttNodeID).waitLists
-    var found: scala.Boolean = false
-    for (element <- waitLists if !found) {
-      if (element.getID == waitListID) {
-        element.receiveTrueForNode(waitListNodeID)
-        found = true
+    //var found: scala.Boolean = false
+    def findWaitList(): Unit = {
+      for (element <- waitLists) {
+        if (element.getID == waitListID) {
+          element.receiveTrueForNode(waitListNodeID)
+          //found = true
+          return
+        }
       }
     }
+    findWaitList()
   }
 
   def doWorkIfNotEnd(_type: Int, test: String, testRank: Int) = {
@@ -171,9 +175,9 @@ class MainActor(query: Path) extends Actor{
     } else doTagWork(_type, test, testRank)
   }
 
-  def startQuery(queryList: List[Message]) = {
+  def startQuery(queryList: List[Message], sender: ActorRef) = {
     val qList = new QList(stack, 1, new ListBuffer[QListNode])
-    for (element <- queryList) element.addQList(ttNodeIndex, qList)
+    for (element <- queryList) element.unpackMessage(ttNodeIndex, qList, sender)
     stack.push(qList)
   }
 
@@ -186,7 +190,7 @@ class MainActor(query: Path) extends Actor{
       //doTagWork(_type, test, testRank)
       if (stack.nonEmpty) doWorkIfNotEnd(_type, test, testRank)
     }
-    case (queryList: List[Message]) => {if (stack.isEmpty) startQuery(queryList)}
+    case (queryList: List[Message]) => {if (stack.isEmpty) startQuery(queryList, sender)}
     case (ttNodeID: Int, waitListID: Int, waitListNodeID: Int) => doResultWork(ttNodeID, waitListID, waitListNodeID)
     /*
                                                       {

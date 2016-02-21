@@ -31,14 +31,14 @@ class PredPCNN(id: Int, label: String, father: TTNode) extends TTNode(id, label)
   }
   override def doMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[Message], test: String,
                        qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): Unit = {
-    if ((father == null && !rStack.top) || (father != null && !rStack.top && !father.rStack.top)) {
+    if ((father == null && !rStack.top.getValue) || (father != null && !rStack.top.getValue && !father.rStack.top.getValue)) {
       Map()
     }
     //(0, 0, 0)
   }
   override def doNotMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[Message], test: String,
                           qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): Unit = {
-    if ((father == null && !rStack.top) || (father != null && !rStack.top && !father.rStack.top)) {
+    if ((father == null && !rStack.top.getValue) || (father != null && !rStack.top.getValue && !father.rStack.top.getValue)) {
       qforx2 += qlistNode
 //      if (!toSend) qforx2 += new QListNode(this, null)
 //      else qforx2 += new QListNode(this, waitList)
@@ -57,8 +57,9 @@ class PredPCNN(id: Int, label: String, father: TTNode) extends TTNode(id, label)
 //    }
 //  }
   override def Map() = {
-    rStack.pop()
-    rStack.push(true)
+//    rStack.pop()
+//    rStack.push(true)
+    rStack.top.setValue(true)
   }
   override def Reduce() = {}    //  由于没有q1，所以只要match test就意味着已经得到true，不会Map，因此也就不需要Reduce
 }

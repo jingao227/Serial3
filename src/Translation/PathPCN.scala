@@ -74,15 +74,16 @@ class PathPCN(id: Int, label: String) extends TTNode(id, label) {
   override def Map() = {
     //rStack.pop()
     //rStack.push(true)
-    q2.rStack.push(false)
+    q2.rStack.push(new RStackNode(null, 0, 0, 0, false))
   }
   override def Reduce() = {
     val r = q2.getResult
-    if (!rStack.top){
-      rStack.pop()
-      rStack.push(r)
+    if (!rStack.top.getValue){
+//      rStack.pop()
+//      rStack.push(r)
+      rStack.top.setValue(r)
     }
-    if (output) println("Current result of " + this + " is " + rStack.top)
+    if (output) println("Current result of " + this + " is " + rStack.top.getValue)
   }
 }
 
