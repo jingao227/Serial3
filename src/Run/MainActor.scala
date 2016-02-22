@@ -88,7 +88,7 @@ class MainActor(query: Path) extends Actor{
     }
   }
 
-  def doQListWork (_type: Int, test: String, testRank: Int) = {
+  def doQListWork (_type: Int, test: String, testRank: Int, send: scala.Boolean) = {
     println(_type + test + testRank)
     if (_type == 0) {
       if (testRank == stack.top.getRank) {
@@ -96,8 +96,8 @@ class MainActor(query: Path) extends Actor{
         val qforx2 = new ListBuffer[QListNode]
         val redList = new ListBuffer[QListNode]
         val sendList = new ListBuffer[Message]
-        stack.pop().doEachWork(toSend = true, sendList, test, qforx1, qforx2, redList)
-        if (sendList.nonEmpty) sendQuery(sendList.toList)
+        stack.pop().doEachWork(send, sendList, test, qforx1, qforx2, redList)
+        if (send && sendList.nonEmpty) sendQuery(sendList.toList)
       }
     } else {
       if (testRank < stack.top.getRank) {
@@ -109,7 +109,7 @@ class MainActor(query: Path) extends Actor{
     }
   }
 
-  def doTagWork (_type: Int, test: String, testRank: Int) = {
+  def doTagWork (_type: Int, test: String, testRank: Int, send: scala.Boolean) = {
 //    if (stack.top.getRank == -2) {
 //      tagCache += new Tag(_type, test, testRank)
 //      stack.pop.doStayWork(new ListBuffer[QListNode])
@@ -131,16 +131,17 @@ class MainActor(query: Path) extends Actor{
 //      }
 //    }
     if (stack.top.getRank == -2) {
-      tagCache += new Tag(_type, test, testRank)
+      tagCache += new Tag(_type, test, testRank, send)
       stack.pop.doStayWork(new ListBuffer[QListNode])
       while (stack.top.getRank == -1) {
         stack.pop().doEachReduce()
       }
       while (stack.top.getRank != -2 && tagCache.nonEmpty) {
         val tag: Tag = tagCache.dequeue()
-        doQListWork(tag.getType, tag.getTest, tag.getTestRank)
+        println("Dequeue:")
+        doQListWork(tag.getType, tag.getTest, tag.getTestRank, tag.getSend)
       }
-    } else doQListWork(_type, test, testRank)
+    } else doQListWork(_type, test, testRank, send)
   }
 
   def doResultWork(ttNodeID: Int, waitListID: Int, waitListNodeID: Int) = {
@@ -158,7 +159,7 @@ class MainActor(query: Path) extends Actor{
     findWaitList()
   }
 
-  def doWorkIfNotEnd(_type: Int, test: String, testRank: Int) = {
+  def doWorkIfNotEnd(_type: Int, test: String, testRank: Int, send: scala.Boolean) = {
     if (_type == 2) {
       while (stack.top.getRank == -2) stack.pop()   //  因为用SAX模拟时，已经到文档结束了就肯定不能再接到结果消息，而stay就是为了后面接到结果消息，所以压入stay就没有意义了，直接弹出
       while (stack.top.getRank == -1) stack.pop().doEachReduce()
@@ -167,12 +168,13 @@ class MainActor(query: Path) extends Actor{
         var tag: Tag = null
         while (tagCache.nonEmpty) {
           tag = tagCache.dequeue()
-          doTagWork(tag.getType, tag.getTest, tag.getTestRank)
+          println("Dequeue:")
+          doTagWork(tag.getType, tag.getTest, tag.getTestRank, tag.getSend)
           while (stack.top.getRank == -2) stack.pop()
           while (stack.top.getRank == -1) stack.pop().doEachReduce()
         }
       }
-    } else doTagWork(_type, test, testRank)
+    } else doTagWork(_type, test, testRank, send)
   }
 
   def startQuery(queryList: List[Message], sender: ActorRef) = {
@@ -186,9 +188,11 @@ class MainActor(query: Path) extends Actor{
   }
 
   def receive = {
-    case (_type: Int, test: String, testRank: Int) => {
+    case (_type: Int, test: String, testRank: Int, send: scala.Boolean) => {
       //doTagWork(_type, test, testRank)
-      if (stack.nonEmpty) doWorkIfNotEnd(_type, test, testRank)
+      if (stack.nonEmpty) {
+        doWorkIfNotEnd(_type, test, testRank, send)
+      }
     }
     case (queryList: List[Message]) => {if (stack.isEmpty) startQuery(queryList, sender)}
     case (ttNodeID: Int, waitListID: Int, waitListNodeID: Int) => doResultWork(ttNodeID, waitListID, waitListNodeID)

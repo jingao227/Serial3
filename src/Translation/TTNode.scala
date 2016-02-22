@@ -4,8 +4,10 @@ package Translation
   * Created by Jing Ao on 2016/2/15.
   */
 import Message.Message
+import Run.MainActor
 import XPath._
 import StackNode.QListNode
+import akka.actor.ActorRef
 import scala.collection.mutable
 import scala.collection.mutable.{Stack, Map, ListBuffer}
 
@@ -56,8 +58,16 @@ class TTNode(id: Int, label: String) {
   }
 
 //  def receiveTrueforx1 = if (!rStack.top) { rStack.pop() ; rStack.push(true) }
-  // TODO:所有rStack.top.setValue(true)时如果有sender，向sender发送结果元组（ttNodeID,waitListID,waitListNodeID），sender=self时不发送
-  def receiveTrueforx1 = if (!rStack.top.getValue) rStack.top.setValue(true)
+  // 所有rStack.top.setValue(true)时如果有sender，向sender发送结果元组（ttNodeID,waitListID,waitListNodeID）
+  def sendOrElse() = {
+    val topNode: RStackNode = rStack.top
+    if (topNode.getSender != null && topNode.getDes != (0, 0, 0)) topNode.getSender ! topNode.getDes
+    //  TODO:是否需要pop？
+  }
+  def receiveTrueforx1() = if (!rStack.top.getValue) {
+    rStack.top.setValue(true)
+    sendOrElse()
+  }
   def receiveResult(qListNode: QListNode): scala.Boolean = ???  //  返回值代表waitList是否为Empty，不是null
   def searchTrue(waitList: WaitList): scala.Boolean = ???
   def remainReceiving(waitList: WaitList): scala.Boolean = ???

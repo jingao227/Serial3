@@ -7,6 +7,7 @@ package Translation
 import Message.Message
 import XPath._
 import StackNode.QListNode
+import akka.actor.ActorRef
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
@@ -39,7 +40,7 @@ class PathPCN(id: Int, label: String) extends TTNode(id, label) {
     remainReceiving(qListNode.getwaitList)  //  结果为false即waitList.isEmpty也不能从waitLists中remove这个waitList，因为还没遇到nil，这个waitList在后面x2的检查中还有可能再加入
   }
   override def remainReceiving(waitList: WaitList): scala.Boolean = {
-    if (waitList.hasTrueAndDel) if (!alreadyTrue) receiveTrueforx1
+    if (waitList.hasTrueAndDel) if (!alreadyTrue) receiveTrueforx1()
     if (!waitList.isEmpty) waitList.updateList()
     if (!waitList.isEmpty) true else false  //  如果还有等待接收的结果(waitList中还有false)
   }
@@ -82,8 +83,12 @@ class PathPCN(id: Int, label: String) extends TTNode(id, label) {
 //      rStack.pop()
 //      rStack.push(r)
       rStack.top.setValue(r)
+      sendOrElse()
     }
-    if (output) println("Current result of " + this + " is " + rStack.top.getValue)
+    if (output) {
+      println("Current result of " + this + " is " + rStack.top.getValue)
+      rStack.top.setValue(false)
+    }
   }
 }
 

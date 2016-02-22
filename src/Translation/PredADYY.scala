@@ -61,6 +61,7 @@ class PredADYY(id: Int, label: String) extends TTNode(id, label) {
 //      rStack.pop()
 //      rStack.push(true)
       rStack.top.setValue(true)
+      sendOrElse()
     }
     r
   }
@@ -69,7 +70,7 @@ class PredADYY(id: Int, label: String) extends TTNode(id, label) {
   }
   override def searchTrue(waitList: WaitList): scala.Boolean = {
     if (waitList.hasTrue) {
-      receiveTrueforx1
+      receiveTrueforx1()
       waitList.clearWaitList()   // 谓词获得了一个true就不用再等别的true
       false                      // waitList已为空，没有要等待接收的结果
     } else {
@@ -147,6 +148,7 @@ class PredADYY(id: Int, label: String) extends TTNode(id, label) {
 //      rStack.pop()
 //      rStack.push(r)
       rStack.top.setValue(r)
+      sendOrElse()
     }
   }
 }

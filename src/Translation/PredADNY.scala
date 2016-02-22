@@ -43,6 +43,7 @@ class PredADNY(id: Int, label: String) extends TTNode(id, label) {
 //      rStack.pop()
 //      rStack.push(true)
       rStack.top.setValue(true)
+      sendOrElse()
     }
     r
   }
@@ -51,7 +52,7 @@ class PredADNY(id: Int, label: String) extends TTNode(id, label) {
   }
   override def searchTrue(waitList: WaitList): scala.Boolean = {
     if (waitList.hasTrue) {
-      receiveTrueforx1
+      receiveTrueforx1()
       waitList.clearWaitList()   // 谓词获得了一个true就不用再等别的true
       false                      // waitList已为空，没有要等待接收的结果
     } else {
@@ -106,6 +107,7 @@ class PredADNY(id: Int, label: String) extends TTNode(id, label) {
 //    rStack.pop()
 //    rStack.push(true)
     rStack.top.setValue(true)
+    sendOrElse()
   }
   override def Reduce() = {}    //  由于没有q1，所以只要match test就意味着已经得到true，不会Map，因此也就不需要Reduce
 }

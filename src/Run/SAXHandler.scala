@@ -38,7 +38,9 @@ class SAXHandler(var rank: Int, mainActor: ActorRef) extends scala.xml.parsing.F
   override def startElement(uri: String, _localName: String, qname: String, attributes: Attributes): Unit = {
     rank = rank + 1
     //println("<" + qname + "> of " + rank)
-    mainActor ! (0, qname, rank)
+    if (attributes.getLength == 1) mainActor ! (0, qname, rank, true)
+    else mainActor ! (0, qname, rank, false)
+    //mainActor ! (0, qname, rank)
 
 //    if (rank == stack.top.getRank) {
 //      val qforx1 = new ListBuffer[QListNode]
@@ -52,7 +54,7 @@ class SAXHandler(var rank: Int, mainActor: ActorRef) extends scala.xml.parsing.F
 
   override def endElement(uri: String, _localName: String, qname: String): Unit = {
     //println("</" + qname + "> of " + rank)
-    mainActor ! (1, qname, rank)
+    mainActor ! (1, qname, rank, false)
 
 //    if (rank < stack.top.getRank) {
 //      stack.pop()
@@ -68,7 +70,7 @@ class SAXHandler(var rank: Int, mainActor: ActorRef) extends scala.xml.parsing.F
     rank = rank - 1
   }
 
-  override def endDocument() = mainActor ! (2, "EndDocument", 0)
+  override def endDocument() = mainActor ! (2, "EndDocument", 0, false)
   def createNode(pre: String,elemName: String,attribs: scala.xml.MetaData,scope: scala.xml.NamespaceBinding,chIter: List[scala.xml.Node]): scala.xml.Node = ???
   def createProcInstr(target: String,data: String): Seq[scala.xml.ProcInstr] = ???
   def createText(text: String): scala.xml.Text = ???

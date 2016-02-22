@@ -37,6 +37,8 @@ class QList(stack: Stack[StackNode], rank: Int, qlist: ListBuffer[QListNode]) ex
     for (element <- qlist) {
       element.doStayWork(toStayList)
     }
-    if (toStayList.nonEmpty) stack.push(new StayNode(stack, toStayList))
+    if (toStayList.nonEmpty) {
+      stack.push(new StayNode(stack, toStayList))
+    }
   }
 }
