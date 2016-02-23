@@ -7,11 +7,11 @@ import org.xml.sax.helpers.XMLReaderFactory
 /**
   * Created by aojing on 2016/2/17.
   */
-class SAXActor(mainActor: ActorRef) extends Actor {
+class SAXActor(mainActor: ActorRef, xmlURI: String) extends Actor {
   //val xmlURI = "D:/Data/dblp/dblp.xml"
-  val xmlURI = "D:/Data/selfmade/books5.xml"
+  //val xmlURI = "E:/Data/selfmade/books2.xml"
   val parser = XMLReaderFactory.createXMLReader()
-  val saxHandler = new SAXHandler(0, mainActor)
+  val saxHandler = new SAXHandler(-1, mainActor)
   System.setProperty("entityExpansionLimit", "3200000")
   parser.setContentHandler(saxHandler)
 
@@ -27,5 +27,5 @@ class SAXActor(mainActor: ActorRef) extends Actor {
 }
 
 object SAXActor {
-  def props(mainActor: ActorRef) = Props(new SAXActor(mainActor))
+  def props(mainActor: ActorRef, xmlURI: String) = Props(new SAXActor(mainActor, xmlURI))
 }

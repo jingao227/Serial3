@@ -34,12 +34,16 @@ class SAXHandler(var rank: Int, mainActor: ActorRef) extends scala.xml.parsing.F
     parser.parse(source, this)
   }
   */
+//  var topElement: scala.Boolean = false
   override def startDocument() = {}
   override def startElement(uri: String, _localName: String, qname: String, attributes: Attributes): Unit = {
+//    if (!topElement) topElement = true
     rank = rank + 1
-    //println("<" + qname + "> of " + rank)
-    if (attributes.getLength == 1) mainActor ! (0, qname, rank, true)
-    else mainActor ! (0, qname, rank, false)
+      //println("<" + qname + "> of " + rank)
+    if (rank != 0) {
+      if (attributes.getLength == 1) mainActor !(0, qname, rank, true)
+      else mainActor !(0, qname, rank, false)
+    }
     //mainActor ! (0, qname, rank)
 
 //    if (rank == stack.top.getRank) {
@@ -54,7 +58,7 @@ class SAXHandler(var rank: Int, mainActor: ActorRef) extends scala.xml.parsing.F
 
   override def endElement(uri: String, _localName: String, qname: String): Unit = {
     //println("</" + qname + "> of " + rank)
-    mainActor ! (1, qname, rank, false)
+    if (rank != 0) mainActor ! (1, qname, rank, false)
 
 //    if (rank < stack.top.getRank) {
 //      stack.pop()

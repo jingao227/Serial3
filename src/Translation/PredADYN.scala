@@ -3,6 +3,7 @@ package Translation
 import Message.Message
 import StackNode.QListNode
 import XPath.Pred
+import akka.actor.ActorRef
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
@@ -44,6 +45,9 @@ class PredADYN(id: Int, label: String, father: TTNode) extends TTNode(id, label)
     }
     r
   }
+  override def receiveQuery(sender: ActorRef, ttNodeID: Int, waitListID: Int, waitListNodeID: Int): Unit =
+    rStack.push(new RStackNode(sender, ttNodeID, waitListID, waitListNodeID, false))
+
   override def receiveResult(qListNode: QListNode): scala.Boolean = {
     searchTrue(qListNode.getwaitList)
   }
@@ -59,8 +63,8 @@ class PredADYN(id: Int, label: String, father: TTNode) extends TTNode(id, label)
   }
   override def doMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[Message], test: String,
                        qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): Unit = {
-    if ((father == null && !rStack.top.getValue) || (father != null && !rStack.top.getValue && !father.rStack.top.getValue)) {
-      Map
+    if (((father == null || father.rStack.isEmpty) && !rStack.top.getValue) || (father != null && father.rStack.nonEmpty && !rStack.top.getValue && !father.rStack.top.getValue)) {
+      Map()
       qforx1 += new QListNode(q1, null)
       qforx1 += new QListNode(this, null)
       //redList += new QListNode(this, null)
@@ -72,7 +76,7 @@ class PredADYN(id: Int, label: String, father: TTNode) extends TTNode(id, label)
   }
   override def doNotMatch(toSend: scala.Boolean, qlistNode: QListNode, sendList: ListBuffer[Message], test: String,
                           qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): Unit = {
-    if ((father == null && !rStack.top.getValue) || (father != null && !rStack.top.getValue && !father.rStack.top.getValue)) {
+    if (((father == null || father.rStack.isEmpty) && !rStack.top.getValue) || (father != null && father.rStack.nonEmpty && !rStack.top.getValue && !father.rStack.top.getValue)) {
       qforx1 += new QListNode(this, null)
       if (toSend) qlistNode.packMessage(this.id, 0, 0, sendList)
       qforx2 += qlistNode

@@ -36,6 +36,8 @@ class PathPCN(id: Int, label: String) extends TTNode(id, label) {
     }
     q2.translate(path.path, ttNodeIndex)
   }
+  override def receiveQuery(sender: ActorRef, ttNodeID: Int, waitListID: Int, waitListNodeID: Int): Unit =
+    rStack.push(new RStackNode(sender, ttNodeID, waitListID, waitListNodeID, false))
   override def receiveResult(qListNode: QListNode): scala.Boolean = {
     remainReceiving(qListNode.getwaitList)  //  结果为false即waitList.isEmpty也不能从waitLists中remove这个waitList，因为还没遇到nil，这个waitList在后面x2的检查中还有可能再加入
   }

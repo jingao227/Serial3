@@ -3,6 +3,7 @@ package Translation
 import Message.Message
 import StackNode.QListNode
 import XPath.Pred
+import akka.actor.ActorRef
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
@@ -55,6 +56,9 @@ class PredPCYY(id: Int, label: String) extends TTNode(id, label) {
     q3 = new PredPCYN(cid + 1, this.label, this)
     q3.translate(new Pred(preds.step, null), ttNodeIndex)
   }
+  override def receiveQuery(sender: ActorRef, ttNodeID: Int, waitListID: Int, waitListNodeID: Int): Unit =
+    receiveQueryToAllChild(this, sender, ttNodeID, waitListID, waitListNodeID)
+
   override def receiveResult(qListNode: QListNode): scala.Boolean = {
     searchTrue(qListNode.getwaitList)
   }
@@ -74,9 +78,12 @@ class PredPCYY(id: Int, label: String) extends TTNode(id, label) {
     Map()
     qforx1 += new QListNode(q1, null)
     //redList += new QListNode(this, null)    //  只在match且压入q'''(x2)时做Reduce
-    if (toSend) qlistNode.packMessage(q1.getID, 0, 0, sendList)
+//    if (toSend) qlistNode.packMessage(q1.getID, 0, 0, sendList)
     redList += qlistNode
-    qforx2 += new QListNode(q3, qlistNode.getwaitList)
+//    qforx2 += new QListNode(q3, qlistNode.getwaitList)
+    val newforq3 = new QListNode(q3, null)
+    if (toSend) newforq3.packMessage(q1.getID, 0, 0, sendList)
+    qforx2 += newforq3
     val newQLNode = new QListNode(q2, null)
     newQLNode.doWork(toSend, sendList, test, qforx1, qforx2, redList)
     //if (!toSend) (0, 0, 0) else (q1.getID, 0, 0)
@@ -99,7 +106,8 @@ class PredPCYY(id: Int, label: String) extends TTNode(id, label) {
     //if (!rStack.top) {
 //    if (!toSend) qforx2 += new QListNode(q3, null)
 //    else qforx2 += new QListNode(q3, waitList)
-    qforx2 += new QListNode(q3, qlistNode.getwaitList)
+//    qforx2 += new QListNode(q3, qlistNode.getwaitList)
+    qforx2 += new QListNode(q3, null)
     val newQLNode = new QListNode(q2, null)
     newQLNode.doWork(toSend, sendList, test, qforx1, qforx2, redList)
     //(0, 0, 0)

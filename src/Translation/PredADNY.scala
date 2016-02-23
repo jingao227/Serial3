@@ -7,6 +7,7 @@ package Translation
 import Message.Message
 import StackNode.QListNode
 import XPath._
+import akka.actor.ActorRef
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
@@ -47,6 +48,9 @@ class PredADNY(id: Int, label: String) extends TTNode(id, label) {
     }
     r
   }
+  override def receiveQuery(sender: ActorRef, ttNodeID: Int, waitListID: Int, waitListNodeID: Int): Unit =
+    receiveQueryToAllChild(this, sender, ttNodeID, waitListID, waitListNodeID)
+
   override def receiveResult(qListNode: QListNode): scala.Boolean = {
     searchTrue(qListNode.getwaitList)
   }
@@ -73,8 +77,11 @@ class PredADNY(id: Int, label: String) extends TTNode(id, label) {
                           qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): Unit = {
     //if (!rStack.top) {
     qforx1 += new QListNode(q3, null)
-    if (toSend) qlistNode.packMessage(q3.getID, 0, 0, sendList)
-    qforx2 += new QListNode(q3, qlistNode.getwaitList)
+//    if (toSend) qlistNode.packMessage(q3.getID, 0, 0, sendList)
+//    qforx2 += new QListNode(q3, qlistNode.getwaitList)
+    val newforq3 = new QListNode(q3, null)
+    if (toSend) newforq3.packMessage(q3.getID, 0, 0, sendList)
+    qforx2 += newforq3
     val newQLNode = new QListNode(q2, null)
     newQLNode.doWork(toSend, sendList, test, qforx1, qforx2, redList)
     //if (!toSend) (0, 0, 0) else (q3.getID, 0, 0)
@@ -103,6 +110,16 @@ class PredADNY(id: Int, label: String) extends TTNode(id, label) {
 //      else toStayList += qListNode
 //    }
 //  }
+  /* TODO:PredYY中的第一个Y结果为true时，还不能返回true，因为第二个Y及后续的所有Y（或q'''）的结果还不知。PredYY的结果应该是所有谓词的合并结果。
+  def tryReduceAllChild(p: TTNode): scala.Boolean = {
+    var r = p.rStack.top.getValue
+    if (p.hasq2) {
+      r = r | p.q3.rStack.top.getValue
+      r = r & tryReduceAllChild(p.q2)
+    }
+    r
+  }
+  */
   override def Map() = {
 //    rStack.pop()
 //    rStack.push(true)

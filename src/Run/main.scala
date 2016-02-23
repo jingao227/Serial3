@@ -83,7 +83,7 @@ object main {
 //                                                        //  /BOOKS/ITEM[AUTHOR]/TITLE
 //                                                        //  若根节点一直未匹配过，则根节点不会做Reduce操作，所以不会有输出（因为输出操作在Reduce中）
     val step1 = new Step(1, "AUTHOR", null)               //  //author
-    val step5 = new Step(1, "ISBN", null)                 //  //ISBN
+    val step5 = new Step(0, "ISBN", null)                 //  //ISBN
     val pred2 = new Pred(step5, null)                     //  [//ISBN]
     val step2 = new Step(1, "TITLE", null)                //  //TITLE
     val pred1 = new Pred(step2, pred2)                     //  [//TITLE][//ISBN]
@@ -120,8 +120,10 @@ object main {
 
 
     val system = ActorSystem("mySystem")                            //   标签作为消息传递给Actor而不是在Actor中解析
-    val mainActor = system.actorOf(Props[MainActor](new MainActor(query)), "mainActor")
-    val saxActor = system.actorOf(Props[SAXActor](new SAXActor(mainActor)), "SAXActor")
+    val remoteActor = system.actorOf(Props[MainActor](new MainActor(query, null)), "remoteActor")
+    val mainActor = system.actorOf(Props[MainActor](new MainActor(query, remoteActor)), "mainActor")
+    val saxActor = system.actorOf(Props[SAXActor](new SAXActor(mainActor, "E:/Data/selfmade/books2.xml")), "SAXActor")
+    val remoteSAX = system.actorOf(Props[SAXActor](new SAXActor(remoteActor, "E:/Data/selfmade/books6.xml")), "remoteSAX")
 
 //    val parser = XMLReaderFactory.createXMLReader()
 //    val saxHandler = new SAXHandler(0, mainActor)

@@ -13,7 +13,7 @@ import org.xml.sax.helpers.XMLReaderFactory
 /**
   * Created by Jing Ao on 2016/2/15.
   */
-class MainActor(query: Path) extends Actor{
+class MainActor(query: Path, remoteActor: ActorRef) extends Actor{
   val ttNodeIndex = mutable.Map[Int, TTNode]()
 
   val root = translate(query, ttNodeIndex)
@@ -29,7 +29,7 @@ class MainActor(query: Path) extends Actor{
   val tagCache = new mutable.Queue[Tag]
 
   val testQueryList = List(new Message(0, 0, 0, 1, 0, 0))
-  self ! testQueryList
+  if (remoteActor != null ) self ! testQueryList
   /*
   val parser = XMLReaderFactory.createXMLReader()
   val saxhandler = new SAXHandler(0, stack)
@@ -89,7 +89,7 @@ class MainActor(query: Path) extends Actor{
   }
 
   def doQListWork (_type: Int, test: String, testRank: Int, send: scala.Boolean) = {
-    println(_type + test + testRank)
+    println(_type + test + testRank + " in " + this.toString )
     if (_type == 0) {
       if (testRank == stack.top.getRank) {
         val qforx1 = new ListBuffer[QListNode]
@@ -178,6 +178,7 @@ class MainActor(query: Path) extends Actor{
   }
 
   def startQuery(queryList: List[Message], sender: ActorRef) = {
+    println(this.toString + " Start quering.")
     val qList = new QList(stack, 1, new ListBuffer[QListNode])
     for (element <- queryList) element.unpackMessage(ttNodeIndex, qList, sender)
     stack.push(qList)
@@ -185,6 +186,7 @@ class MainActor(query: Path) extends Actor{
 
   def sendQuery(queryList: List[Message]) = {
     // TODO:获得对方Actor引用，! queryList
+    if (remoteActor != null) remoteActor ! queryList
   }
 
   def receive = {
@@ -257,6 +259,6 @@ class MainActor(query: Path) extends Actor{
 }
 
 object MainActor {
-  def props(query: Path) = Props(new MainActor(query))
+  def props(query: Path, remoteActor: ActorRef) = Props(new MainActor(query, remoteActor))
 }
 

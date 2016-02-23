@@ -3,6 +3,7 @@ package Translation
 import Message.Message
 import StackNode.QListNode
 import XPath.Pred
+import akka.actor.ActorRef
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
@@ -65,6 +66,9 @@ class PredADYY(id: Int, label: String) extends TTNode(id, label) {
     }
     r
   }
+  override def receiveQuery(sender: ActorRef, ttNodeID: Int, waitListID: Int, waitListNodeID: Int): Unit =
+    receiveQueryToAllChild(this, sender, ttNodeID, waitListID, waitListNodeID)
+
   override def receiveResult(qListNode: QListNode): scala.Boolean = {
     searchTrue(qListNode.getwaitList)
   }
@@ -85,9 +89,12 @@ class PredADYY(id: Int, label: String) extends TTNode(id, label) {
     qforx1 += new QListNode(q1, null)
     qforx1 += new QListNode(q3, null)
     //redList += new QListNode(this, null) //  只在match且压入q'''(x2)时做Reduce
-    if (toSend) qlistNode.packMessage(q1.getID, q3.getID, 0, sendList)
+//    if (toSend) qlistNode.packMessage(q1.getID, q3.getID, 0, sendList)
     redList += qlistNode
-    qforx2 += new QListNode(q3, qlistNode.getwaitList)
+//    qforx2 += new QListNode(q3, qlistNode.getwaitList)
+    val newforq3 = new QListNode(q3, null)
+    if (toSend) newforq3.packMessage(q1.getID, q3.getID, 0, sendList)
+    qforx2 += newforq3
 //    if (!toSend) qforx2 += new QListNode(q3, qlistNode.getwaitList)
 //    else qforx2 += new QListNode(q3, packMessage(q1.getID, q3.getID, 0, qlistNode.waitList, sendList))
     val newQLNode = new QListNode(q2, null)
@@ -111,8 +118,11 @@ class PredADYY(id: Int, label: String) extends TTNode(id, label) {
                           qforx1: ListBuffer[QListNode], qforx2: ListBuffer[QListNode], redList: ListBuffer[QListNode]): Unit = {
     //if (!rStack.top) {
     qforx1 += new QListNode(q3, null)
-    if (toSend) qlistNode.packMessage(q3.getID, 0, 0, sendList)
-    qforx2 += new QListNode(q3, qlistNode.getwaitList)
+//    if (toSend) qlistNode.packMessage(q3.getID, 0, 0, sendList)
+//    qforx2 += new QListNode(q3, qlistNode.getwaitList)
+    val newforq3 = new QListNode(q3, null)
+    if (toSend) newforq3.packMessage(q3.getID, 0, 0, sendList)
+    qforx2 += newforq3
     val newQLNode = new QListNode(q2, null)
     newQLNode.doWork(toSend, sendList, test, qforx1, qforx2, redList)
     //if (!toSend) (0, 0, 0) else (q3.getID, 0, 0)

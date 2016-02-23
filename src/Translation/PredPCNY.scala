@@ -3,6 +3,7 @@ package Translation
 import Message.Message
 import StackNode.QListNode
 import XPath.Pred
+import akka.actor.ActorRef
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
@@ -36,6 +37,9 @@ class PredPCNY(id: Int, label: String) extends TTNode(id, label) {
     q3 = new PredPCNN(cid + 1, this.label, this)
     q3.translate(new Pred(preds.step, null), ttNodeIndex)
   }
+  override def receiveQuery(sender: ActorRef, ttNodeID: Int, waitListID: Int, waitListNodeID: Int): Unit =
+    receiveQueryToAllChild(this, sender, ttNodeID, waitListID, waitListNodeID)
+
   override def receiveResult(qListNode: QListNode): scala.Boolean = {
     searchTrue(qListNode.getwaitList)
   }
@@ -64,7 +68,8 @@ class PredPCNY(id: Int, label: String) extends TTNode(id, label) {
     //if (!rStack.top) {
 //    if (!toSend) qforx2 += new QListNode(q3, null)
 //    else qforx2 += new QListNode(q3, waitList)
-    qforx2 += new QListNode(q3, qlistNode.getwaitList)
+//    qforx2 += new QListNode(q3, qlistNode.getwaitList)
+    qforx2 += new QListNode(q3, null)
     val newQLNode = new QListNode(q2, null)
     newQLNode.doWork(toSend, sendList, test, qforx1, qforx2, redList)
     //(0, 0, 0)

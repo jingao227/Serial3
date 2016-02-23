@@ -64,6 +64,17 @@ class TTNode(id: Int, label: String) {
     if (topNode.getSender != null && topNode.getDes != (0, 0, 0)) topNode.getSender ! topNode.getDes
     //  TODO:是否需要pop？
   }
+  def receiveQuery(sender: ActorRef, ttNodeID: Int, waitListID: Int, waitListNodeID: Int): Unit = ???
+  def receiveQueryToAllChild(p: TTNode, sender: ActorRef, ttNodeID: Int, waitListID: Int, waitListNodeID: Int): Unit = {
+    p.rStack.push(new RStackNode(sender, ttNodeID, waitListID, waitListNodeID, false))
+    if (p.hasq2) {
+      //      p.q3.rStack.push(false)
+//      p.q3.rStack.push(new RStackNode(sender, ttNodeID, waitListID, waitListNodeID, false))
+//      receiveQueryToAllChild(p.q2, sender, ttNodeID, waitListID, waitListNodeID)
+      p.q3.rStack.push(new RStackNode(null, 0, 0, 0, false))
+      MapAllChild(p.q2)
+    }
+  }
   def receiveTrueforx1() = if (!rStack.top.getValue) {
     rStack.top.setValue(true)
     sendOrElse()
